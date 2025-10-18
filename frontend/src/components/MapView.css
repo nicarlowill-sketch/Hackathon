@@ -472,6 +472,17 @@
   margin: 0.75rem 0;
 }
 
+.location-coords {
+  margin: 0.5rem 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #00A8E8;
+  background: rgba(0, 168, 232, 0.1);
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 168, 232, 0.3);
+}
+
 .user-info,
 .date-info {
   margin: 0.25rem 0;
