@@ -612,4 +612,18 @@
     padding: 0.75rem 1.25rem;
     font-size: 0.9rem;
   }
+
+  .marker-legend {
+    bottom: 60px;
+    left: 10px;
+    padding: 0.75rem 1rem;
+  }
+
+  .marker-legend h4 {
+    font-size: 0.9rem;
+  }
+
+  .legend-label {
+    font-size: 0.85rem;
+  }
 }
