@@ -4,20 +4,7 @@
   height: calc(100vh - 280px);
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15),
-              0 0 60px rgba(0, 255, 255, 0.2);
-  animation: mapGlow 3s ease-in-out infinite;
-}
-
-@keyframes mapGlow {
-  0%, 100% {
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15),
-                0 0 60px rgba(0, 255, 255, 0.2);
-  }
-  50% {
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15),
-                0 0 80px rgba(0, 255, 200, 0.4);
-  }
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 }
 
 .leaflet-map {
