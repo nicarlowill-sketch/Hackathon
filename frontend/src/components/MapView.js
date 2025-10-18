@@ -306,6 +306,21 @@ const MapView = ({
     <div className="map-container" data-testid="map-container">
       <div ref={mapRef} className="leaflet-map" />
       
+      {/* Use My Location Button */}
+      <button
+        className="use-location-btn"
+        onClick={getUserLocation}
+        disabled={gettingLocation}
+        data-testid="use-location-btn"
+        title="Use my current location"
+      >
+        {gettingLocation ? (
+          <span className="location-spinner">📍</span>
+        ) : (
+          <>📍 Use My Location</>
+        )}
+      </button>
+      
       {/* Location Info Panel */}
       {selectedLocation && (
         <div className="location-info-panel" data-testid="location-info-panel">
