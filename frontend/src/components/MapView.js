@@ -79,6 +79,7 @@ const MapView = ({
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersLayerRef = useRef(null);
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
   // Initialize map
   useEffect(() => {
