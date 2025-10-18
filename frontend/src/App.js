@@ -250,6 +250,7 @@ function App() {
               selectedMarker={selectedMarker}
               onMarkerClick={setSelectedMarker}
               onMapClick={handleMapClick}
+              onLocationMarker={handleLocationMarker}
               onDeleteMarker={handleDeleteMarker}
               currentUser={user}
               darkMode={darkMode}
