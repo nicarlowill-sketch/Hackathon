@@ -117,6 +117,40 @@ const MapView = ({
 
     tileLayer.addTo(map);
 
+    // Add Jamaica outline with vibrant neon border
+    const jamaicaOutlineLayer = L.geoJSON(JAMAICA_OUTLINE, {
+      style: {
+        color: darkMode ? '#00E5FF' : '#00C9A7',
+        weight: 5,
+        opacity: 1,
+        fillColor: 'transparent',
+        fillOpacity: 0,
+        className: 'jamaica-outline'
+      }
+    }).addTo(map);
+
+    // Add location markers for parishes and cities
+    JAMAICA_LOCATIONS.forEach(location => {
+      const locationIcon = L.divIcon({
+        html: `<div class="location-marker ${location.type}" data-location="${location.name}">
+                 <span class="location-dot"></span>
+                 <span class="location-label">${location.name}</span>
+               </div>`,
+        className: 'custom-location-icon',
+        iconSize: [120, 40],
+        iconAnchor: [60, 20]
+      });
+
+      const locationMarker = L.marker(location.coords, { icon: locationIcon });
+      
+      locationMarker.on('click', () => {
+        setSelectedLocation(location);
+        map.setView(location.coords, 11, { animate: true });
+      });
+
+      locationMarker.addTo(map);
+    });
+
     // Handle map clicks
     map.on('click', (e) => {
       onMapClick(e.latlng.lat, e.latlng.lng);
