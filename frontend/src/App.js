@@ -126,6 +126,17 @@ function App() {
     return;
   };
 
+  const handleLocationMarker = (lat, lng) => {
+    // This is called from the "Use My Location" button
+    if (!user) {
+      toast.error('Please login to add markers');
+      setShowAuthModal(true);
+      return;
+    }
+    setNewMarkerPosition({ lat, lng });
+    setShowAddMarkerModal(true);
+  };
+
   return (
     <BrowserRouter>
       <div className={`app-container ${darkMode ? 'dark-mode' : ''}`}>
