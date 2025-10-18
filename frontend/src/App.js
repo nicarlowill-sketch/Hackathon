@@ -121,7 +121,8 @@ function App() {
   };
 
   const handleMapClick = (lat, lng) => {
-    if (!user) {
+    const token = localStorage.getItem('token');
+    if (!user && !token) {
       toast.error('Please login to add markers');
       setShowAuthModal(true);
       return;
