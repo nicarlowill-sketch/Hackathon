@@ -262,7 +262,8 @@ const MapView = ({
             mapInstanceRef.current.setView([latitude, longitude], 13, { animate: true });
           }
           
-          onMapClick(latitude, longitude);
+          // Use the location marker handler instead of map click
+          onLocationMarker(latitude, longitude);
         } else {
           alert('You appear to be outside of Jamaica. This app is for Jamaica locations only.');
         }
