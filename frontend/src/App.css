@@ -51,15 +51,28 @@ body {
   backdrop-filter: blur(10px);
   border-bottom: 2px solid rgba(0, 200, 167, 0.2);
   padding: 1rem 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1),
+              0 0 30px rgba(0, 255, 255, 0.1);
   position: sticky;
   top: 0;
   z-index: 1000;
+  animation: headerFloat 3s ease-in-out infinite;
+}
+
+@keyframes headerFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
 }
 
 .dark-mode .app-header {
   background: rgba(26, 26, 46, 0.95);
-  border-bottom: 2px solid rgba(0, 168, 232, 0.3);
+  border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+              0 0 40px rgba(0, 255, 255, 0.2);
 }
 
 .header-content {
