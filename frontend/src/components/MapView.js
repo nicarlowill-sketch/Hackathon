@@ -106,20 +106,9 @@ const MapView = ({
 
     tileLayer.addTo(map);
 
-    // Add simple Jamaica outline (subtle border only)
-    L.geoJSON(JAMAICA_OUTLINE, {
-      style: {
-        color: darkMode ? '#555555' : '#cccccc',
-        weight: 2,
-        opacity: 0.6,
-        fillColor: 'transparent',
-        fillOpacity: 0
-      }
-    }).addTo(map);
-
-    // Handle map clicks
+    // Handle map clicks - disabled for marker creation (location required)
     map.on('click', (e) => {
-      onMapClick(e.latlng.lat, e.latlng.lng);
+      // Do nothing - markers can only be added via geolocation
     });
 
     // Track zoom changes
