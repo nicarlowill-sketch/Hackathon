@@ -106,15 +106,14 @@ const MapView = ({
 
     tileLayer.addTo(map);
 
-    // Add Jamaica outline
+    // Add simple Jamaica outline (subtle border only)
     L.geoJSON(JAMAICA_OUTLINE, {
       style: {
-        color: darkMode ? '#00E5FF' : '#00C9A7',
-        weight: 8,
-        opacity: 1,
+        color: darkMode ? '#555555' : '#cccccc',
+        weight: 2,
+        opacity: 0.6,
         fillColor: 'transparent',
-        fillOpacity: 0,
-        className: 'jamaica-outline'
+        fillOpacity: 0
       }
     }).addTo(map);
 
