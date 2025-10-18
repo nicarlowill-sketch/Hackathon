@@ -154,17 +154,6 @@ const MapView = ({
         });
 
     tileLayer.addTo(map);
-
-    // Update outline color
-    map.eachLayer((layer) => {
-      if (layer instanceof L.GeoJSON) {
-        layer.setStyle({
-          color: darkMode ? '#555555' : '#cccccc',
-          weight: 2,
-          opacity: 0.6
-        });
-      }
-    });
   }, [darkMode]);
   // Update labels based on zoom
   useEffect(() => {
