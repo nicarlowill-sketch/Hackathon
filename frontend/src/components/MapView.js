@@ -60,6 +60,7 @@ const MapView = ({
   selectedMarker,
   onMarkerClick,
   onMapClick,
+  onLocationMarker,
   onDeleteMarker,
   currentUser,
   darkMode
