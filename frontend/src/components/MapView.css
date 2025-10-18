@@ -449,4 +449,24 @@
   .map-instructions p {
     font-size: 0.85rem;
   }
+
+  .location-info-panel {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    min-width: auto;
+    padding: 1.25rem;
+  }
+
+  .location-info-panel h3 {
+    font-size: 1.5rem;
+  }
+
+  .location-marker {
+    padding: 0.4rem 0.8rem;
+  }
+
+  .location-label {
+    font-size: 0.75rem;
+  }
 }
