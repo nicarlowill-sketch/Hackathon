@@ -54,20 +54,97 @@
 /* Jamaica outline styling */
 .jamaica-outline {
   stroke: #00E5FF;
-  stroke-width: 6;
-  filter: drop-shadow(0 0 20px rgba(0, 255, 255, 1));
+  stroke-width: 8;
+  filter: drop-shadow(0 0 25px rgba(0, 255, 255, 1));
   animation: outlinePulse 3s ease-in-out infinite;
 }
 
 @keyframes outlinePulse {
   0%, 100% {
-    stroke-width: 6;
-    filter: drop-shadow(0 0 20px rgba(0, 255, 255, 1));
+    stroke-width: 8;
+    filter: drop-shadow(0 0 25px rgba(0, 255, 255, 1));
   }
   50% {
-    stroke-width: 8;
-    filter: drop-shadow(0 0 35px rgba(0, 255, 255, 1));
+    stroke-width: 10;
+    filter: drop-shadow(0 0 40px rgba(0, 255, 255, 1));
   }
+}
+
+/* Pulsing dot markers */
+.pulse-marker {
+  animation: markerPulseDot 2s ease-in-out infinite;
+}
+
+@keyframes markerPulseDot {
+  0%, 100% {
+    r: 8;
+    opacity: 0.9;
+  }
+  50% {
+    r: 10;
+    opacity: 1;
+  }
+}
+
+/* Parish labels (shown at low zoom) */
+.parish-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #00C9A7;
+  text-shadow: 0 0 15px rgba(0, 255, 255, 0.8),
+               0 2px 5px rgba(0, 0, 0, 0.5);
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.15) 0%, rgba(0, 201, 167, 0.15) 100%);
+  border-radius: 15px;
+  border: 2px solid rgba(0, 255, 255, 0.4);
+  backdrop-filter: blur(5px);
+  white-space: nowrap;
+  text-align: center;
+  animation: labelFloat 4s ease-in-out infinite;
+}
+
+.dark-mode .parish-label {
+  color: #00E5FF;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 1),
+               0 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+@keyframes labelFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Town labels (shown at higher zoom) */
+.town-label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #00A8E8;
+  text-shadow: 0 0 10px rgba(0, 168, 232, 0.8),
+               0 1px 3px rgba(0, 0, 0, 0.5);
+  padding: 0.4rem 0.8rem;
+  background: linear-gradient(135deg, rgba(0, 168, 232, 0.2) 0%, rgba(0, 201, 167, 0.2) 100%);
+  border-radius: 12px;
+  border: 2px solid rgba(0, 168, 232, 0.4);
+  backdrop-filter: blur(5px);
+  white-space: nowrap;
+  text-align: center;
+}
+
+.dark-mode .town-label {
+  color: #00E5FF;
+  text-shadow: 0 0 15px rgba(0, 255, 255, 1),
+               0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.custom-label-icon {
+  background: transparent !important;
+  border: none !important;
 }
 
 /* Location markers */
