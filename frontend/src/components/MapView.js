@@ -181,6 +181,50 @@ const MapView = ({
     };
   }, []);
 
+  // Get user's current location
+  const getUserLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setGettingLocation(true);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        
+        // Check if user is in Jamaica (approximate bounds)
+        if (latitude >= 17.7 && latitude <= 18.6 && 
+            longitude >= -78.4 && longitude <= -76.1) {
+          setUserLocation({ lat: latitude, lng: longitude });
+          
+          // Center map on user location
+          if (mapInstanceRef.current) {
+            mapInstanceRef.current.setView([latitude, longitude], 13, { animate: true });
+          }
+          
+          // Automatically trigger add marker
+          onMapClick(latitude, longitude);
+        } else {
+          alert('You appear to be outside of Jamaica. This app is for Jamaica locations only.');
+        }
+        
+        setGettingLocation(false);
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+        alert('Unable to get your location. Please enable location services.');
+        setGettingLocation(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  };
+
   // Update tile layer on dark mode change
   useEffect(() => {
     if (!mapInstanceRef.current) return;
