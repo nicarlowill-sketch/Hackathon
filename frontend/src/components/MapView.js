@@ -245,6 +245,31 @@ const MapView = ({
   return (
     <div className="map-container" data-testid="map-container">
       <div ref={mapRef} className="leaflet-map" />
+      
+      {/* Location Info Panel */}
+      {selectedLocation && (
+        <div className="location-info-panel" data-testid="location-info-panel">
+          <button 
+            className="close-location-btn"
+            onClick={() => setSelectedLocation(null)}
+            data-testid="close-location-btn"
+          >
+            ×
+          </button>
+          <h3>{selectedLocation.name}</h3>
+          <p className="parish-name">Parish of {selectedLocation.parish}</p>
+          <p className="location-type">
+            {selectedLocation.type === 'capital' ? '🏛️ Capital City' : '🏙️ Major City'}
+          </p>
+          <div className="location-markers-count">
+            {markers.filter(m => 
+              Math.abs(m.latitude - selectedLocation.coords[0]) < 0.1 && 
+              Math.abs(m.longitude - selectedLocation.coords[1]) < 0.1
+            ).length} markers in this area
+          </div>
+        </div>
+      )}
+      
       <div className="map-instructions">
         <p>📍 Click anywhere on the map to add a marker!</p>
       </div>
