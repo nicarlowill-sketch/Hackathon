@@ -349,6 +349,97 @@
   border-color: rgba(255, 255, 255, 1);
 }
 
+/* Marker Legend */
+.marker-legend {
+  position: absolute;
+  bottom: 80px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 1rem 1.5rem;
+  border-radius: 15px;
+  border: 2px solid rgba(0, 201, 167, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.dark-mode .marker-legend {
+  background: rgba(26, 26, 46, 0.95);
+  border-color: rgba(0, 255, 255, 0.3);
+}
+
+.marker-legend h4 {
+  margin: 0 0 0.75rem 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #00C9A7;
+}
+
+.dark-mode .marker-legend h4 {
+  color: #00E5FF;
+}
+
+.legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.legend-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 10px currentColor;
+  animation: legendPulse 2s ease-in-out infinite;
+}
+
+@keyframes legendPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.legend-dot.event {
+  background-color: #00A8E8;
+  color: #00A8E8;
+}
+
+.legend-dot.obstacle {
+  background-color: #FFB627;
+  color: #FFB627;
+}
+
+.legend-dot.object {
+  background-color: #00C9A7;
+  color: #00C9A7;
+}
+
+.legend-dot.alert {
+  background-color: #FF6B6B;
+  color: #FF6B6B;
+}
+
+.legend-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.dark-mode .legend-label {
+  color: #ffffff;
+}
+
 /* Custom Marker Styles */
 .custom-marker {
   width: 40px;
