@@ -160,6 +160,26 @@ body {
   font-size: 0.9rem;
   color: #333;
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.view-toggle button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(0, 201, 167, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.view-toggle button:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .dark-mode .view-toggle button {
@@ -169,7 +189,20 @@ body {
 .view-toggle button.active {
   background: linear-gradient(135deg, #00C9A7 0%, #00A8E8 100%);
   color: white;
-  box-shadow: 0 4px 12px rgba(0, 201, 167, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 201, 167, 0.3),
+              0 0 20px rgba(0, 255, 255, 0.2);
+  animation: buttonGlow 2s ease-in-out infinite;
+}
+
+@keyframes buttonGlow {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(0, 201, 167, 0.3),
+                0 0 20px rgba(0, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 4px 15px rgba(0, 201, 167, 0.5),
+                0 0 30px rgba(0, 255, 255, 0.4);
+  }
 }
 
 .dark-mode-toggle {
