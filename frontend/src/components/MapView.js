@@ -94,6 +94,8 @@ const MapView = ({
   const mapInstanceRef = useRef(null);
   const markersLayerRef = useRef(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
+  const [gettingLocation, setGettingLocation] = useState(false);
 
   // Initialize map
   useEffect(() => {
