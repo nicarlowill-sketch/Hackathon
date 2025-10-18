@@ -54,7 +54,7 @@
 .map-instructions {
   position: absolute;
   bottom: 20px;
-  left: 50%
+  left: 50%;
   transform: translateX(-50%);
   background: linear-gradient(135deg, rgba(0, 255, 255, 0.95) 0%, rgba(0, 201, 167, 0.95) 100%);
   backdrop-filter: blur(10px);
