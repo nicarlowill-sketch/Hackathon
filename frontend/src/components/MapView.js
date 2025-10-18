@@ -137,6 +137,46 @@ const MapView = ({
     };
   }, []);
 
+  // Update tile layer on dark mode change
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+
+    const map = mapInstanceRef.current;
+    
+    // Remove all tile layers
+    map.eachLayer((layer) => {
+      if (layer instanceof L.TileLayer) {
+        map.removeLayer(layer);
+      }
+    });
+
+    // Add appropriate tile layer for mode
+    const tileLayer = darkMode
+      ? L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; OpenStreetMap &copy; CARTO',
+          subdomains: 'abcd',
+          maxZoom: 16,
+          className: 'map-tiles'
+        })
+      : L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; OpenStreetMap &copy; CARTO',
+          maxZoom: 16,
+          className: 'map-tiles'
+        });
+
+    tileLayer.addTo(map);
+
+    // Update outline color
+    map.eachLayer((layer) => {
+      if (layer instanceof L.GeoJSON) {
+        layer.setStyle({
+          color: darkMode ? '#555555' : '#cccccc',
+          weight: 2,
+          opacity: 0.6
+        });
+      }
+    });
+  }, [darkMode]);
   // Update labels based on zoom
   useEffect(() => {
     if (!labelsLayerRef.current || !mapInstanceRef.current) return;
