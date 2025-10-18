@@ -1,10 +1,45 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Button } from '@/components/ui/button';
 import './MapView.css';
 
 const JAMAICA_CENTER = [18.1096, -77.2975];
+
+// Jamaica parishes and major cities with coordinates
+const JAMAICA_LOCATIONS = [
+  { name: 'Kingston', type: 'capital', coords: [18.0179, -76.8099], parish: 'Kingston' },
+  { name: 'Montego Bay', type: 'city', coords: [18.4762, -77.8939], parish: 'St. James' },
+  { name: 'Spanish Town', type: 'city', coords: [17.9911, -76.9567], parish: 'St. Catherine' },
+  { name: 'Portmore', type: 'city', coords: [17.9546, -76.8827], parish: 'St. Catherine' },
+  { name: 'Mandeville', type: 'city', coords: [18.0412, -77.5055], parish: 'Manchester' },
+  { name: 'Ocho Rios', type: 'city', coords: [18.4052, -77.1034], parish: 'St. Ann' },
+  { name: 'Port Antonio', type: 'city', coords: [18.1773, -76.4528], parish: 'Portland' },
+  { name: 'Negril', type: 'city', coords: [18.2687, -78.3481], parish: 'Westmoreland' },
+  { name: 'May Pen', type: 'city', coords: [17.9645, -77.2419], parish: 'Clarendon' },
+  { name: 'Savanna-la-Mar', type: 'city', coords: [18.2189, -78.1326], parish: 'Westmoreland' },
+  { name: 'Falmouth', type: 'city', coords: [18.4919, -77.6561], parish: 'Trelawny' },
+  { name: 'Morant Bay', type: 'city', coords: [17.8814, -76.4092], parish: 'St. Thomas' },
+  { name: 'Black River', type: 'city', coords: [18.0261, -77.8514], parish: 'St. Elizabeth' },
+  { name: 'Lucea', type: 'city', coords: [18.4509, -78.1736], parish: 'Hanover' }
+];
+
+// Jamaica outline GeoJSON (simplified)
+const JAMAICA_OUTLINE = {
+  "type": "Feature",
+  "properties": { "name": "Jamaica" },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [[
+      [-78.3690, 18.2690], [-78.2200, 18.4500], [-77.8800, 18.4900],
+      [-77.5800, 18.4800], [-77.2000, 18.5200], [-76.9000, 18.5000],
+      [-76.5000, 18.4200], [-76.2000, 18.3500], [-76.1800, 18.1500],
+      [-76.2500, 17.9000], [-76.5000, 17.8500], [-76.8700, 17.8600],
+      [-77.2000, 17.8800], [-77.5500, 17.9200], [-77.8000, 18.0000],
+      [-78.2000, 18.1000], [-78.3600, 18.2000], [-78.3690, 18.2690]
+    ]]
+  }
+};
 
 const getMarkerIcon = (category) => {
   const icons = {
