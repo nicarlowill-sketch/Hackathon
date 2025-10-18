@@ -121,14 +121,9 @@ function App() {
   };
 
   const handleMapClick = (lat, lng) => {
-    const token = localStorage.getItem('token');
-    if (!user && !token) {
-      toast.error('Please login to add markers');
-      setShowAuthModal(true);
-      return;
-    }
-    setNewMarkerPosition({ lat, lng });
-    setShowAddMarkerModal(true);
+    // Map clicks disabled - users must use geolocation for credibility
+    // Only the "Use My Location" button can add markers
+    return;
   };
 
   return (
