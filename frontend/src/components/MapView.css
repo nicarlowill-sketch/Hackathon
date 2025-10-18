@@ -54,19 +54,19 @@
 /* Jamaica outline styling */
 .jamaica-outline {
   stroke: #00E5FF;
-  stroke-width: 5;
-  filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.8));
+  stroke-width: 6;
+  filter: drop-shadow(0 0 20px rgba(0, 255, 255, 1));
   animation: outlinePulse 3s ease-in-out infinite;
 }
 
 @keyframes outlinePulse {
   0%, 100% {
-    stroke-width: 5;
-    filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.8));
+    stroke-width: 6;
+    filter: drop-shadow(0 0 20px rgba(0, 255, 255, 1));
   }
   50% {
-    stroke-width: 6;
-    filter: drop-shadow(0 0 25px rgba(0, 255, 255, 1));
+    stroke-width: 8;
+    filter: drop-shadow(0 0 35px rgba(0, 255, 255, 1));
   }
 }
 
