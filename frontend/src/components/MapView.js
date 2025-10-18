@@ -285,22 +285,45 @@ const MapView = ({
     <div className="map-container" data-testid="map-container">
       <div ref={mapRef} className="leaflet-map" />
       
+      {/* Marker Legend */}
+      <div className="marker-legend" data-testid="marker-legend">
+        <h4>Marker Types</h4>
+        <div className="legend-items">
+          <div className="legend-item">
+            <span className="legend-dot event"></span>
+            <span className="legend-label">Event</span>
+          </div>
+          <div className="legend-item">
+            <span className="legend-dot obstacle"></span>
+            <span className="legend-label">Obstacle</span>
+          </div>
+          <div className="legend-item">
+            <span className="legend-dot object"></span>
+            <span className="legend-label">Object</span>
+          </div>
+          <div className="legend-item">
+            <span className="legend-dot alert"></span>
+            <span className="legend-label">Alert</span>
+          </div>
+        </div>
+      </div>
+      
       <button
         className="use-location-btn"
         onClick={getUserLocation}
         disabled={gettingLocation}
         data-testid="use-location-btn"
-        title="Use my current location"
+        title="Use my current location to add marker"
       >
         {gettingLocation ? (
           <span className="location-spinner">📍</span>
         ) : (
-          <>📍 Use My Location</>
+          <>📍 Use My Location to Add Marker</>
         )}
       </button>
       
       <div className="map-instructions">
-        <p>📍 Click anywhere on the map to add a marker!</p>
+        <p>📍 Use your device location to add credible markers!</p>
       </div>
     </div>
   );
