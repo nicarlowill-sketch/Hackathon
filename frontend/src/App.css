@@ -92,12 +92,19 @@ body {
 
 .pulse-icon {
   font-size: 2rem;
-  animation: pulse 2s ease-in-out infinite;
+  animation: pulseGlow 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
 }
 
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+@keyframes pulseGlow {
+  0%, 100% { 
+    transform: scale(1);
+    filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
+  }
+  50% { 
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.8));
+  }
 }
 
 .app-title {
@@ -108,6 +115,17 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  animation: titleShimmer 3s ease-in-out infinite;
+  text-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+}
+
+@keyframes titleShimmer {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.2);
+  }
 }
 
 .dark-mode .app-title {
@@ -115,6 +133,7 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.5));
 }
 
 .header-actions {
