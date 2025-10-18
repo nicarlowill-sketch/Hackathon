@@ -11,6 +11,16 @@ body {
   background: linear-gradient(135deg, #e8f5e9 0%, #fff9c4 50%, #b2ebf2 100%);
   min-height: 100vh;
   overflow-x: hidden;
+  animation: backgroundShift 15s ease infinite;
+}
+
+@keyframes backgroundShift {
+  0%, 100% {
+    background: linear-gradient(135deg, #e8f5e9 0%, #fff9c4 50%, #b2ebf2 100%);
+  }
+  50% {
+    background: linear-gradient(135deg, #b2ebf2 0%, #e8f5e9 50%, #fff9c4 100%);
+  }
 }
 
 .app-container {
@@ -18,10 +28,20 @@ body {
   display: flex;
   flex-direction: column;
   background: linear-gradient(135deg, #e8f5e9 0%, #fff9c4 50%, #b2ebf2 100%);
+  animation: containerGlow 10s ease infinite;
+}
+
+@keyframes containerGlow {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.05);
+  }
 }
 
 .app-container.dark-mode {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(135deg, #0a0a1a 0%, #16213e 50%, #1a1a2e 100%);
   color: #ffffff;
 }
 
