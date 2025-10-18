@@ -51,23 +51,14 @@
   transform: scale(1.1);
 }
 
-/* Jamaica outline styling */
-.jamaica-outline {
-  stroke: #00E5FF;
-  stroke-width: 8;
-  filter: drop-shadow(0 0 25px rgba(0, 255, 255, 1));
-  animation: outlinePulse 3s ease-in-out infinite;
+/* Jamaica outline styling - simple and clean */
+.leaflet-overlay-pane svg path {
+  transition: stroke 0.3s ease;
 }
 
-@keyframes outlinePulse {
-  0%, 100% {
-    stroke-width: 8;
-    filter: drop-shadow(0 0 25px rgba(0, 255, 255, 1));
-  }
-  50% {
-    stroke-width: 10;
-    filter: drop-shadow(0 0 40px rgba(0, 255, 255, 1));
-  }
+/* Map tiles */
+.map-tiles {
+  transition: opacity 0.3s ease;
 }
 
 /* Pulsing dot markers */
