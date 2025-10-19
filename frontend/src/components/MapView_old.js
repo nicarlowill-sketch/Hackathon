@@ -1,50 +1,67 @@
 import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
-// Color based on category
-const getMarkerColor = (category) => {
-  switch (category) {
-    case "parish":
-      return "red";
-    case "town":
-      return "blue";
-    default:
-      return "gray";
-  }
-};
-
-const MapView = ({ markers = [] }) => {
+const MapView = ({ markers = [], setSelectedLocation }) => {
   const mapRef = useRef(null);
   const markersLayerRef = useRef(null);
-  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [mapReady, setMapReady] = useState(false);
 
-  // Initialize the map
+  // Initialize map once
   useEffect(() => {
     if (mapRef.current) return;
 
-    const map = L.map("map").setView([18.1096, -77.2975], 8);
+    const map = L.map("map", {
+      center: [18.1096, -77.2975], // Default Jamaica
+      zoom: 8,
+    });
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap contributors",
+      attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
     }).addTo(map);
 
-    markersLayerRef.current = L.layerGroup().addTo(map);
+    const markersLayer = L.layerGroup().addTo(map);
+    markersLayerRef.current = markersLayer;
     mapRef.current = map;
+    setMapReady(true);
   }, []);
 
-  // Update markers when data changes
+  // Helper to color markers by category
+  const getMarkerColor = (category) => {
+    switch (category?.toLowerCase()) {
+      case "food": return "red";
+      case "tourism": return "blue";
+      case "emergency": return "orange";
+      case "education": return "green";
+      default: return "purple";
+    }
+  };
+
+  // Normalize markers input safely
+  const normalizeMarkers = (data) => {
+    if (!data) return [];
+    if (Array.isArray(data)) return data;
+    if (typeof data === "object") return Object.values(data);
+    try {
+      const parsed = JSON.parse(data);
+      return Array.isArray(parsed) ? parsed : Object.values(parsed);
+    } catch {
+      return [];
+    }
+  };
+
+  // Render markers
   useEffect(() => {
-    if (!markersLayerRef.current) return;
+    if (!mapReady || !markersLayerRef.current) return;
+
+    const safeMarkers = normalizeMarkers(markers);
+
+    console.log("Rendering markers:", safeMarkers);
 
     markersLayerRef.current.clearLayers();
 
-    // ✅ Ensure markers is always an array
-    const safeMarkers = Array.isArray(markers)
-      ? markers
-      : Object.values(markers || {});
-
     safeMarkers.forEach((marker) => {
-      if (!marker.latitude || !marker.longitude) return;
+      if (!marker || !marker.latitude || !marker.longitude) return;
 
       const color = getMarkerColor(marker.category);
 
@@ -59,22 +76,18 @@ const MapView = ({ markers = [] }) => {
         .addTo(markersLayerRef.current)
         .on("click", () => setSelectedLocation(marker));
     });
-  }, [markers]);
+  }, [markers, mapReady]);
 
   return (
-    <div style={{ position: "relative" }}>
-      <div id="map" style={{ height: "100vh", width: "100%" }}></div>
-
-      {selectedLocation && (
-        <div className="location-info-panel">
-          <button onClick={() => setSelectedLocation(null)}>×</button>
-          <h3>{selectedLocation.name}</h3>
-          <p>
-            {selectedLocation.type === "parish" ? "Parish" : "Town"}
-          </p>
-        </div>
-      )}
-    </div>
+    <div
+      id="map"
+      style={{
+        width: "100%",
+        height: "100vh",
+        borderRadius: "10px",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+      }}
+    ></div>
   );
 };
 
