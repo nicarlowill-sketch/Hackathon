@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Button } from '@/components/ui/button';
+import { Button } from './ui/button';
 import './MapView.css';
 
 const JAMAICA_CENTER = [18.1096, -77.2975];
@@ -282,3 +282,4 @@ return (
 };
 
 export default MapView;
+

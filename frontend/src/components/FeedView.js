@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button } from './ui/button';
 import './FeedView.css';
 
 const FeedView = ({ markers, onMarkerClick, onDeleteMarker, currentUser }) => {
@@ -94,3 +94,4 @@ const FeedView = ({ markers, onMarkerClick, onDeleteMarker, currentUser }) => {
 };
 
 export default FeedView;
+
