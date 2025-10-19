@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+console.log("Rendering from MAPVIEW_OLD.JS");
 
 const MapView = ({ markers = [], setSelectedLocation }) => {
   const mapRef = useRef(null);
