@@ -120,4 +120,3 @@
 4. **Professional Appearance**: Clean, modern design that feels local
 
 The app now feels like a true Jamaican community platform with authentic colors, appropriate sizing, and a design that reflects the island's natural beauty and cultural identity.
-

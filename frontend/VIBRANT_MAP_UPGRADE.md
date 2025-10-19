@@ -108,4 +108,3 @@
 - **State Management**: Proper state tracking for interactions
 
 The map now has a vibrant, engaging design that's far from plain, with interactive parish labels that zoom into specific areas when clicked, exactly as requested! 🎨✨
-

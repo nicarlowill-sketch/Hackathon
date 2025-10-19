@@ -297,4 +297,3 @@ const ParishDomain = ({
 };
 
 export default ParishDomain;
-

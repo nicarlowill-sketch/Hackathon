@@ -121,4 +121,3 @@
 5. **Realistic Experience**: Sample data reflects real usage
 
 The map is now much more populated with realistic sample data and allows posting from anywhere, making it look like an active community platform! 🗺️✨
-

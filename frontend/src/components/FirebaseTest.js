@@ -151,4 +151,3 @@ const FirebaseTest = () => {
 };
 
 export default FirebaseTest;
-

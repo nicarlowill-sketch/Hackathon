@@ -123,4 +123,3 @@
 5. **Performance**: Faster, more responsive interface
 
 The app is now much more robust, user-friendly, and engaging while maintaining its core functionality of helping Jamaicans share local information through interactive maps.
-
