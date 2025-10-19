@@ -1,167 +1,81 @@
 import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 
-const MapView = ({ markers = [] }) => {
-const mapRef = useRef(null);
-const markersLayerRef = useRef(null);
-const [selectedLocation, setSelectedLocation] = useState(null);
-const [gettingLocation, setGettingLocation] = useState(false);
-
-// Initialize map only once
-useEffect(() => {
-if (mapRef.current) return;
-
-const newMap = L.map("map").setView([18.1096, -77.2975], 8); // Default Jamaica
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: "© OpenStreetMap contributors",
-}).addTo(newMap);
-
-const layerGroup = L.layerGroup().addTo(newMap);
-mapRef.current = newMap;
-markersLayerRef.current = layerGroup;
-
-
-}, []);
-
-// Render and update markers safely
-useEffect(() => {
-if (!markersLayerRef.current) return;
-
-// Clear any previous markers
-markersLayerRef.current.clearLayers();
-
-// Ensure markers is an array
-if (!Array.isArray(markers)) {
-  console.warn("Markers is not an array:", markers);
-  return;
-}
-
+// Color based on category
 const getMarkerColor = (category) => {
   switch (category) {
-    case "Safe":
-      return "green";
-    case "Warning":
-      return "orange";
-    case "Danger":
+    case "parish":
       return "red";
-    default:
+    case "town":
       return "blue";
+    default:
+      return "gray";
   }
 };
 
-markers.forEach((marker) => {
-  if (!marker.latitude || !marker.longitude) return;
+const MapView = ({ markers = [] }) => {
+  const mapRef = useRef(null);
+  const markersLayerRef = useRef(null);
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
-  const color = getMarkerColor(marker.category);
+  // Initialize the map
+  useEffect(() => {
+    if (mapRef.current) return;
 
-  const leafletMarker = L.circleMarker([marker.latitude, marker.longitude], {
-    radius: 8,
-    color,
-    fillColor: color,
-    fillOpacity: 0.7,
-  })
-    .addTo(markersLayerRef.current)
-    .on("click", () => setSelectedLocation(marker));
-});
+    const map = L.map("map").setView([18.1096, -77.2975], 8);
 
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap contributors",
+    }).addTo(map);
 
-}, [markers]);
+    markersLayerRef.current = L.layerGroup().addTo(map);
+    mapRef.current = map;
+  }, []);
 
-// Use My Location button handler
-const handleUseMyLocation = () => {
-if (!navigator.geolocation) {
-alert("Geolocation is not supported by your browser.");
-return;
-}
+  // Update markers when data changes
+  useEffect(() => {
+    if (!markersLayerRef.current) return;
 
-setGettingLocation(true);
-navigator.geolocation.getCurrentPosition(
-  (position) => {
-    const { latitude, longitude } = position.coords;
-    mapRef.current.setView([latitude, longitude], 13);
+    markersLayerRef.current.clearLayers();
 
-    L.circleMarker([latitude, longitude], {
-      radius: 10,
-      color: "blue",
-      fillColor: "blue",
-      fillOpacity: 0.7,
-    })
-      .addTo(markersLayerRef.current)
-      .bindPopup("You are here!")
-      .openPopup();
+    // ✅ Ensure markers is always an array
+    const safeMarkers = Array.isArray(markers)
+      ? markers
+      : Object.values(markers || {});
 
-    setGettingLocation(false);
-  },
-  (error) => {
-    console.error("Error getting location:", error);
-    alert("Unable to retrieve your location.");
-    setGettingLocation(false);
-  }
-);
+    safeMarkers.forEach((marker) => {
+      if (!marker.latitude || !marker.longitude) return;
 
+      const color = getMarkerColor(marker.category);
 
-};
+      const leafletMarker = L.circleMarker([marker.latitude, marker.longitude], {
+        radius: 8,
+        fillColor: color,
+        color: color,
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8,
+      })
+        .addTo(markersLayerRef.current)
+        .on("click", () => setSelectedLocation(marker));
+    });
+  }, [markers]);
 
-return (
-<div style={{ position: "relative" }}>
-<div id="map" style={{ height: "100vh", width: "100%" }}></div>
+  return (
+    <div style={{ position: "relative" }}>
+      <div id="map" style={{ height: "100vh", width: "100%" }}></div>
 
-  <button
-    onClick={handleUseMyLocation}
-    disabled={gettingLocation}
-    style={{
-      position: "absolute",
-      top: 20,
-      left: 20,
-      background: "#007bff",
-      color: "white",
-      border: "none",
-      padding: "10px 14px",
-      borderRadius: "8px",
-      cursor: "pointer",
-      zIndex: 1000,
-    }}
-  >
-    📍 {gettingLocation ? "Locating..." : "Use My Location"}
-  </button>
-
-  {selectedLocation && (
-    <div
-      style={{
-        position: "absolute",
-        bottom: 20,
-        left: 20,
-        background: "white",
-        padding: "10px",
-        borderRadius: "8px",
-        boxShadow: "0px 2px 8px rgba(0,0,0,0.2)",
-        maxWidth: "250px",
-        zIndex: 1000,
-      }}
-    >
-      <button
-        onClick={() => setSelectedLocation(null)}
-        style={{
-          float: "right",
-          background: "none",
-          border: "none",
-          fontSize: "16px",
-          cursor: "pointer",
-        }}
-      >
-        ✖
-      </button>
-      <h3 style={{ marginTop: "0.5rem" }}>{selectedLocation.name}</h3>
-      <p>
-        Type:{" "}
-        {selectedLocation.type === "parish" ? "Parish" : "Town"}
-      </p>
+      {selectedLocation && (
+        <div className="location-info-panel">
+          <button onClick={() => setSelectedLocation(null)}>×</button>
+          <h3>{selectedLocation.name}</h3>
+          <p>
+            {selectedLocation.type === "parish" ? "Parish" : "Town"}
+          </p>
+        </div>
+      )}
     </div>
-  )}
-</div>
-
-
-);
+  );
 };
 
 export default MapView;
