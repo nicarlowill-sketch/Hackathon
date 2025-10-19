@@ -1,122 +1,167 @@
-// MapView.js
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
-import "leaflet/dist/leaflet.css";
 
-const MapView = ({ markers }) => {
-  const [map, setMap] = useState(null);
-  const [safeMarkers, setSafeMarkers] = useState([]);
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  const [gettingLocation, setGettingLocation] = useState(false);
+const MapView = ({ markers = [] }) => {
+const mapRef = useRef(null);
+const markersLayerRef = useRef(null);
+const [selectedLocation, setSelectedLocation] = useState(null);
+const [gettingLocation, setGettingLocation] = useState(false);
 
-  // ✅ Initialize map once
-  useEffect(() => {
-    if (!map) {
-      const newMap = L.map("map").setView([18.1096, -77.2975], 8); // Jamaica default center
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-      }).addTo(newMap);
-      setMap(newMap);
-    }
-  }, [map]);
+// Initialize map only once
+useEffect(() => {
+if (mapRef.current) return;
 
-  // ✅ Handle incoming markers safely
-  useEffect(() => {
-    console.log("🧭 Incoming markers raw value:", markers);
-    console.log("🧭 Type:", typeof markers);
-    console.log("🧭 Array.isArray:", Array.isArray(markers));
+const newMap = L.map("map").setView([18.1096, -77.2975], 8); // Default Jamaica
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: "© OpenStreetMap contributors",
+}).addTo(newMap);
 
-    if (!Array.isArray(markers)) {
-      console.warn("⚠️ Expected markers array but got:", markers);
+const layerGroup = L.layerGroup().addTo(newMap);
+mapRef.current = newMap;
+markersLayerRef.current = layerGroup;
 
-      if (markers && typeof markers === "object") {
-        const converted = Object.values(markers);
-        console.log("🧩 Converted object to array:", converted);
-        setSafeMarkers(converted);
-        return;
-      }
 
-      setSafeMarkers([]);
-      return;
-    }
+}, []);
 
-    setSafeMarkers(markers);
-  }, [markers]);
+// Render and update markers safely
+useEffect(() => {
+if (!markersLayerRef.current) return;
 
-  // ✅ Add markers to the map
-  useEffect(() => {
-    if (!map) return;
+// Clear any previous markers
+markersLayerRef.current.clearLayers();
 
-    // Clear old markers
-    map.eachLayer((layer) => {
-      if (layer instanceof L.Marker) {
-        map.removeLayer(layer);
-      }
-    });
+// Ensure markers is an array
+if (!Array.isArray(markers)) {
+  console.warn("Markers is not an array:", markers);
+  return;
+}
 
-    // Add new ones safely
-    if (!Array.isArray(safeMarkers)) {
-      console.warn("⚠️ safeMarkers is not an array:", safeMarkers);
-      return;
-    }
+const getMarkerColor = (category) => {
+  switch (category) {
+    case "Safe":
+      return "green";
+    case "Warning":
+      return "orange";
+    case "Danger":
+      return "red";
+    default:
+      return "blue";
+  }
+};
 
-    safeMarkers.forEach((marker) => {
-      if (!marker || !marker.lat || !marker.lng) return;
+markers.forEach((marker) => {
+  if (!marker.latitude || !marker.longitude) return;
 
-      const leafletMarker = L.marker([marker.lat, marker.lng]).addTo(map);
-      leafletMarker.on("click", () => setSelectedLocation(marker));
-    });
-  }, [map, safeMarkers]);
+  const color = getMarkerColor(marker.category);
 
-  // ✅ “Use My Location” button handler
-  const handleUseMyLocation = () => {
-    if (!map) return;
-    setGettingLocation(true);
+  const leafletMarker = L.circleMarker([marker.latitude, marker.longitude], {
+    radius: 8,
+    color,
+    fillColor: color,
+    fillOpacity: 0.7,
+  })
+    .addTo(markersLayerRef.current)
+    .on("click", () => setSelectedLocation(marker));
+});
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const { latitude, longitude } = pos.coords;
-          L.marker([latitude, longitude])
-            .addTo(map)
-            .bindPopup("📍 You are here")
-            .openPopup();
-          map.setView([latitude, longitude], 12);
-          setGettingLocation(false);
-        },
-        (err) => {
-          alert("Location access denied or unavailable.");
-          console.error(err);
-          setGettingLocation(false);
-        }
-      );
-    } else {
-      alert("Geolocation not supported by your browser.");
-      setGettingLocation(false);
-    }
-  };
 
-  return (
-    <div className="map-container">
-      <div id="map" style={{ height: "600px", width: "100%" }}></div>
+}, [markers]);
 
+// Use My Location button handler
+const handleUseMyLocation = () => {
+if (!navigator.geolocation) {
+alert("Geolocation is not supported by your browser.");
+return;
+}
+
+setGettingLocation(true);
+navigator.geolocation.getCurrentPosition(
+  (position) => {
+    const { latitude, longitude } = position.coords;
+    mapRef.current.setView([latitude, longitude], 13);
+
+    L.circleMarker([latitude, longitude], {
+      radius: 10,
+      color: "blue",
+      fillColor: "blue",
+      fillOpacity: 0.7,
+    })
+      .addTo(markersLayerRef.current)
+      .bindPopup("You are here!")
+      .openPopup();
+
+    setGettingLocation(false);
+  },
+  (error) => {
+    console.error("Error getting location:", error);
+    alert("Unable to retrieve your location.");
+    setGettingLocation(false);
+  }
+);
+
+
+};
+
+return (
+<div style={{ position: "relative" }}>
+<div id="map" style={{ height: "100vh", width: "100%" }}></div>
+
+  <button
+    onClick={handleUseMyLocation}
+    disabled={gettingLocation}
+    style={{
+      position: "absolute",
+      top: 20,
+      left: 20,
+      background: "#007bff",
+      color: "white",
+      border: "none",
+      padding: "10px 14px",
+      borderRadius: "8px",
+      cursor: "pointer",
+      zIndex: 1000,
+    }}
+  >
+    📍 {gettingLocation ? "Locating..." : "Use My Location"}
+  </button>
+
+  {selectedLocation && (
+    <div
+      style={{
+        position: "absolute",
+        bottom: 20,
+        left: 20,
+        background: "white",
+        padding: "10px",
+        borderRadius: "8px",
+        boxShadow: "0px 2px 8px rgba(0,0,0,0.2)",
+        maxWidth: "250px",
+        zIndex: 1000,
+      }}
+    >
       <button
-        className="use-location-btn"
-        onClick={handleUseMyLocation}
-        disabled={gettingLocation}
+        onClick={() => setSelectedLocation(null)}
+        style={{
+          float: "right",
+          background: "none",
+          border: "none",
+          fontSize: "16px",
+          cursor: "pointer",
+        }}
       >
-        📍 Use My Location
+        ✖
       </button>
-
-      {selectedLocation && (
-        <div className="location-info-panel">
-          <button onClick={() => setSelectedLocation(null)}>✖</button>
-          <h3>{selectedLocation.name}</h3>
-          <p>{selectedLocation.type === "parish" ? "Parish" : "Town"}</p>
-        </div>
-      )}
+      <h3 style={{ marginTop: "0.5rem" }}>{selectedLocation.name}</h3>
+      <p>
+        Type:{" "}
+        {selectedLocation.type === "parish" ? "Parish" : "Town"}
+      </p>
     </div>
-  );
+  )}
+</div>
+
+
+);
 };
 
 export default MapView;
