@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -11,30 +11,59 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select';
+import { Badge } from './ui/badge';
+import { MapPin, Camera, Upload, X, AlertTriangle } from 'lucide-react';
 import './AddMarkerModal.css';
 
-const AddMarkerModal = ({ isOpen, onClose, onSubmit, position }) => {
+const AddMarkerModal = ({ isOpen, onClose, onSubmit, position, currentUser }) => {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('event');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState('');
+  const [images, setImages] = useState([]);
+  const [urgency, setUrgency] = useState('normal');
+  const [tags, setTags] = useState('');
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef(null);
 
+  // Enhanced image handling with multiple images
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Limit file size to 1MB for MVP
-      if (file.size > 1024 * 1024) {
-        alert('Image size should be less than 1MB');
-        return;
+    const files = Array.from(e.target.files);
+    const validFiles = files.filter(file => {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        alert(`${file.name} is too large. Please choose files under 5MB.`);
+        return false;
       }
+      if (!file.type.startsWith('image/')) {
+        alert(`${file.name} is not an image file.`);
+        return false;
+      }
+      return true;
+    });
 
+    if (validFiles.length === 0) return;
+
+    // Process each valid file
+    validFiles.forEach(file => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImage(reader.result);
+        setImages(prev => [...prev, {
+          id: Date.now() + Math.random(),
+          file: file,
+          url: reader.result,
+          name: file.name
+        }]);
       };
       reader.readAsDataURL(file);
-    }
+    });
+  };
+
+  const removeImage = (imageId) => {
+    setImages(prev => prev.filter(img => img.id !== imageId));
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
   };
 
   const handleSubmit = async (e) => {
@@ -43,22 +72,34 @@ const AddMarkerModal = ({ isOpen, onClose, onSubmit, position }) => {
 
     setLoading(true);
     try {
-      await onSubmit({
+      console.log('Submitting marker...', { title, category, description, urgency });
+      
+      const markerData = {
         title,
         category,
         description,
         latitude: position.lat,
         longitude: position.lng,
-        image: image || null
-      });
+        urgency,
+        tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+        images: images.map(img => img.url),
+        userId: currentUser?.id,
+        userEmail: currentUser?.email
+      };
 
-      // Reset form
+      await onSubmit(markerData);
+
+      // Reset form only on success
       setTitle('');
       setCategory('event');
       setDescription('');
       setImage('');
+      setImages([]);
+      setUrgency('normal');
+      setTags('');
     } catch (error) {
-      // Error handled by parent
+      console.error('Marker submission failed:', error);
+      // Keep form data on error so user can retry
     } finally {
       setLoading(false);
     }
@@ -93,10 +134,14 @@ const AddMarkerModal = ({ isOpen, onClose, onSubmit, position }) => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="event" data-testid="category-event">🎉 Event</SelectItem>
-                <SelectItem value="obstacle" data-testid="category-obstacle">⚠️ Obstacle</SelectItem>
-                <SelectItem value="object" data-testid="category-object">📍 Object</SelectItem>
-                <SelectItem value="alert" data-testid="category-alert">🚨 Alert</SelectItem>
+                <SelectItem value="event" data-testid="category-event">🎉 Events</SelectItem>
+                <SelectItem value="traffic" data-testid="category-traffic">🚗 Traffic</SelectItem>
+                <SelectItem value="hazards" data-testid="category-hazards">⚠️ Hazards</SelectItem>
+                <SelectItem value="weather" data-testid="category-weather">🌤️ Weather</SelectItem>
+                <SelectItem value="crime" data-testid="category-crime">🚨 Crime Alerts</SelectItem>
+                <SelectItem value="food" data-testid="category-food">🍽️ Food</SelectItem>
+                <SelectItem value="services" data-testid="category-services">🏢 Services</SelectItem>
+                <SelectItem value="object" data-testid="category-object">📍 Objects</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -114,18 +159,75 @@ const AddMarkerModal = ({ isOpen, onClose, onSubmit, position }) => {
             />
           </div>
 
+          {/* Urgency Level */}
           <div className="form-group">
-            <Label htmlFor="image">Image (Optional)</Label>
+            <Label htmlFor="urgency">Urgency Level</Label>
+            <Select value={urgency} onValueChange={setUrgency}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="low">🟢 Low - General Information</SelectItem>
+                <SelectItem value="normal">🟡 Normal - Important Update</SelectItem>
+                <SelectItem value="high">🟠 High - Urgent Attention</SelectItem>
+                <SelectItem value="critical">🔴 Critical - Emergency</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Tags */}
+          <div className="form-group">
+            <Label htmlFor="tags">Tags (Optional)</Label>
             <Input
-              id="image"
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              data-testid="marker-image-input"
+              id="tags"
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+              placeholder="traffic, accident, roadwork (comma separated)"
+              data-testid="marker-tags-input"
             />
-            {image && (
-              <div className="image-preview">
-                <img src={image} alt="Preview" />
+            <p className="form-hint">Add relevant tags to help others find your post</p>
+          </div>
+
+          {/* Enhanced Image Upload */}
+          <div className="form-group">
+            <Label>Photos (Optional)</Label>
+            <div className="image-upload-section">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={triggerFileInput}
+                className="upload-button"
+                data-testid="marker-image-input"
+              >
+                <Camera size={20} />
+                Add Photos
+              </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageChange}
+                style={{ display: 'none' }}
+              />
+              <p className="upload-hint">Upload up to 5 photos (5MB each max)</p>
+            </div>
+            
+            {/* Image Preview Grid */}
+            {images.length > 0 && (
+              <div className="image-preview-grid">
+                {images.map((img) => (
+                  <div key={img.id} className="image-preview-item">
+                    <img src={img.url} alt={img.name} />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(img.id)}
+                      className="remove-image-btn"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
           </div>

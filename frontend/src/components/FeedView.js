@@ -5,9 +5,13 @@ const FeedView = ({ markers, onMarkerClick, onDeleteMarker, currentUser }) => {
   const getCategoryIcon = (category) => {
     const icons = {
       event: '🎉',
-      obstacle: '⚠️',
-      object: '📍',
-      alert: '🚨'
+      traffic: '🚗',
+      hazard: '⚠️',
+      weather: '🌤️',
+      crime: '🚨',
+      food: '🍽️',
+      service: '🏢',
+      object: '📍'
     };
     return icons[category] || '📍';
   };
@@ -49,17 +53,19 @@ const FeedView = ({ markers, onMarkerClick, onDeleteMarker, currentUser }) => {
 
               <p className="card-description">{marker.description}</p>
 
-              {marker.image && (
-                <div className="card-image">
-                  <img src={marker.image} alt={marker.title} />
+              {marker.images && marker.images.length > 0 && (
+                <div className="card-images">
+                  {marker.images.slice(0, 3).map((img, index) => (
+                    <img key={index} src={img} alt={`${marker.title} image ${index + 1}`} className="card-image" />
+                  ))}
                 </div>
               )}
 
               <div className="card-meta">
                 <div className="meta-info">
-                  <p className="user-info">👤 {marker.user_email}</p>
+                  <p className="user-info">👤 {marker.userEmail || marker.user_email || 'Anonymous'}</p>
                   <p className="date-info">
-                    📅 {new Date(marker.created_at).toLocaleDateString()}
+                    📅 {new Date(marker.createdAt || marker.created_at).toLocaleDateString()}
                   </p>
                   <p className="location-info">
                     📍 {marker.latitude.toFixed(4)}, {marker.longitude.toFixed(4)}

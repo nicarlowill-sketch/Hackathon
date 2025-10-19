@@ -2,37 +2,225 @@
   position: relative;
   width: 100%;
   height: calc(100vh - 280px);
-  border-radius: 20px;
+  border-radius: 25px;
   overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 60px rgba(45, 80, 22, 0.3), 0 0 40px rgba(217, 119, 6, 0.2);
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, rgba(45, 80, 22, 0.1) 0%, rgba(26, 54, 93, 0.1) 100%);
+  animation: mapGlow 8s ease-in-out infinite;
+}
+
+@keyframes mapGlow {
+  0%, 100% { 
+    box-shadow: 0 20px 60px rgba(45, 80, 22, 0.3), 0 0 40px rgba(217, 119, 6, 0.2);
+  }
+  50% { 
+    box-shadow: 0 25px 70px rgba(45, 80, 22, 0.4), 0 0 50px rgba(217, 119, 6, 0.3);
+  }
 }
 
 .leaflet-map {
   width: 100%;
   height: 100%;
   z-index: 1;
+  border-radius: 22px;
+}
+
+/* Map overlay for enhanced visual appeal */
+.map-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(45, 80, 22, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(26, 54, 93, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(217, 119, 6, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 2;
+  border-radius: 22px;
 }
 
 /* Neon overlay effects removed - using clean natural look */
 
 /* Custom leaflet controls styling */
 .leaflet-control-zoom a {
-  background: rgba(0, 201, 167, 0.9) !important;
+  background: linear-gradient(135deg, #2d5016 0%, #1a365d 100%) !important;
   color: white !important;
-  border: 2px solid rgba(0, 255, 255, 0.5) !important;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+  border: 3px solid rgba(255, 255, 255, 0.3) !important;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 8px 25px rgba(45, 80, 22, 0.4), 0 0 20px rgba(217, 119, 6, 0.3);
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  font-size: 18px !important;
 }
 
 .leaflet-control-zoom a:hover {
-  background: rgba(0, 168, 232, 1) !important;
-  box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
-  transform: scale(1.1);
+  background: linear-gradient(135deg, #1a365d 0%, #d97706 100%) !important;
+  box-shadow: 0 12px 35px rgba(45, 80, 22, 0.6), 0 0 30px rgba(217, 119, 6, 0.5);
+  transform: scale(1.15);
 }
 
-/* Jamaica outline styling - simple and clean */
+/* Enhanced Jamaica outline styling */
 .leaflet-overlay-pane svg path {
   transition: stroke 0.3s ease;
+  filter: drop-shadow(0 2px 8px rgba(45, 80, 22, 0.3));
+}
+
+/* Add a subtle border to the map */
+.leaflet-container {
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+/* Enhanced popup styling */
+.leaflet-popup-content-wrapper {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(240, 248, 240, 0.98) 100%);
+  border-radius: 20px;
+  box-shadow: 0 15px 40px rgba(45, 80, 22, 0.4), 0 0 20px rgba(217, 119, 6, 0.2);
+  border: 3px solid rgba(45, 80, 22, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.leaflet-popup-tip {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(240, 248, 240, 0.98) 100%);
+  border: 3px solid rgba(45, 80, 22, 0.3);
+}
+
+/* Enhanced marker popup content */
+.marker-popup {
+  min-width: 280px;
+  max-width: 350px;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.popup-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2d5016;
+  line-height: 1.3;
+  flex: 1;
+  margin-right: 0.5rem;
+}
+
+.urgency-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.urgency-badge.low {
+  background: rgba(16, 185, 129, 0.2);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.urgency-badge.normal {
+  background: rgba(245, 158, 11, 0.2);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.urgency-badge.high {
+  background: rgba(249, 115, 22, 0.2);
+  color: #ea580c;
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.urgency-badge.critical {
+  background: rgba(239, 68, 68, 0.2);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.popup-category {
+  margin-bottom: 0.75rem;
+}
+
+.category-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: white;
+}
+
+.category-badge.event { background: linear-gradient(135deg, #2d5016, #1a365d); }
+.category-badge.traffic { background: linear-gradient(135deg, #1a365d, #2d5016); }
+.category-badge.hazard { background: linear-gradient(135deg, #dc2626, #991b1b); }
+.category-badge.weather { background: linear-gradient(135deg, #059669, #047857); }
+.category-badge.crime { background: linear-gradient(135deg, #ea580c, #c2410c); }
+.category-badge.food { background: linear-gradient(135deg, #d97706, #92400e); }
+.category-badge.service { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+.category-badge.object { background: linear-gradient(135deg, #059669, #047857); }
+
+.popup-description {
+  margin: 0 0 1rem 0;
+  color: #4b5563;
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.popup-images {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.popup-image {
+  width: 80px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid rgba(45, 80, 22, 0.2);
+}
+
+.popup-footer {
+  border-top: 1px solid rgba(45, 80, 22, 0.1);
+  padding-top: 0.75rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.popup-footer p {
+  margin: 0.25rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.delete-btn {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.delete-btn:hover {
+  background: linear-gradient(135deg, #991b1b, #7f1d1d);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
 
 /* Map tiles */
@@ -40,76 +228,137 @@
   transition: opacity 0.3s ease;
 }
 
-/* Pulsing dot markers */
+/* Enhanced pulsing dot markers */
 .pulse-marker {
   animation: markerPulseDot 2s ease-in-out infinite;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
 }
 
 @keyframes markerPulseDot {
   0%, 100% {
     r: 8;
     opacity: 0.9;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
   }
   50% {
-    r: 10;
+    r: 14;
     opacity: 1;
+    filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.4));
   }
 }
 
-/* Parish labels (shown at low zoom) */
+/* Parish labels (shown at low zoom) - Vibrant and interactive */
 .parish-label {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
-  color: #00C9A7;
-  text-shadow: 0 0 15px rgba(0, 255, 255, 0.8),
-               0 2px 5px rgba(0, 0, 0, 0.5);
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, rgba(0, 255, 255, 0.15) 0%, rgba(0, 201, 167, 0.15) 100%);
-  border-radius: 15px;
-  border: 2px solid rgba(0, 255, 255, 0.4);
-  backdrop-filter: blur(5px);
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(45, 80, 22, 0.6);
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(135deg, #2d5016 0%, #1a365d 50%, #d97706 100%);
+  border-radius: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
   white-space: nowrap;
   text-align: center;
-  animation: labelFloat 4s ease-in-out infinite;
+  box-shadow: 0 8px 25px rgba(45, 80, 22, 0.4), 0 0 20px rgba(217, 119, 6, 0.3);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  animation: parishPulse 4s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.parish-label::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.parish-label:hover::before {
+  left: 100%;
+}
+
+@keyframes parishPulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 8px 25px rgba(45, 80, 22, 0.4), 0 0 20px rgba(217, 119, 6, 0.3);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 0 12px 35px rgba(45, 80, 22, 0.6), 0 0 30px rgba(217, 119, 6, 0.5);
+  }
 }
 
 .dark-mode .parish-label {
-  color: #00E5FF;
-  text-shadow: 0 0 20px rgba(0, 255, 255, 1),
-               0 2px 5px rgba(0, 0, 0, 0.8);
+  color: #a8d5a8;
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(45, 80, 22, 0.2) 100%);
+  border-color: rgba(168, 213, 168, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
-@keyframes labelFloat {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-3px);
-  }
+/* Enhanced hover effect for parish labels */
+.parish-label:hover {
+  transform: translateY(-4px) scale(1.1);
+  box-shadow: 0 15px 40px rgba(45, 80, 22, 0.7), 0 0 40px rgba(217, 119, 6, 0.6);
+  background: linear-gradient(135deg, #1a365d 0%, #2d5016 50%, #ea580c 100%);
+  border-color: rgba(255, 255, 255, 0.6);
+  color: #ffffff;
+  animation: none;
 }
 
-/* Town labels (shown at higher zoom) */
+.clickable-parish {
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.clickable-parish:hover {
+  transform: translateY(-4px) scale(1.1);
+  box-shadow: 0 15px 40px rgba(45, 80, 22, 0.7), 0 0 40px rgba(217, 119, 6, 0.6);
+  background: linear-gradient(135deg, #1a365d 0%, #2d5016 50%, #ea580c 100%);
+  border-color: rgba(255, 255, 255, 0.6);
+  color: #ffffff;
+  animation: none;
+}
+
+/* Town labels (shown at higher zoom) - Jamaican style */
 .town-label {
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #00A8E8;
-  text-shadow: 0 0 10px rgba(0, 168, 232, 0.8),
-               0 1px 3px rgba(0, 0, 0, 0.5);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 8px rgba(26, 54, 93, 0.6);
   padding: 0.4rem 0.8rem;
-  background: linear-gradient(135deg, rgba(0, 168, 232, 0.2) 0%, rgba(0, 201, 167, 0.2) 100%);
-  border-radius: 12px;
-  border: 2px solid rgba(0, 168, 232, 0.4);
-  backdrop-filter: blur(5px);
+  background: linear-gradient(135deg, #1a365d 0%, #2d5016 50%, #d97706 100%);
+  border-radius: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(8px);
   white-space: nowrap;
   text-align: center;
+  box-shadow: 0 6px 20px rgba(26, 54, 93, 0.4), 0 0 15px rgba(217, 119, 6, 0.3);
+  transition: all 0.3s ease;
+  animation: townGlow 6s ease-in-out infinite;
+}
+
+@keyframes townGlow {
+  0%, 100% { 
+    box-shadow: 0 6px 20px rgba(26, 54, 93, 0.4), 0 0 15px rgba(217, 119, 6, 0.3);
+  }
+  50% { 
+    box-shadow: 0 8px 25px rgba(26, 54, 93, 0.5), 0 0 20px rgba(217, 119, 6, 0.4);
+  }
 }
 
 .dark-mode .town-label {
-  color: #00E5FF;
-  text-shadow: 0 0 15px rgba(0, 255, 255, 1),
-               0 1px 3px rgba(0, 0, 0, 0.8);
+  color: #90cdf4;
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.85) 0%, rgba(26, 54, 93, 0.2) 100%);
+  border-color: rgba(144, 205, 244, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .custom-label-icon {
@@ -625,5 +874,4 @@
 
   .legend-label {
     font-size: 0.85rem;
-  }
-}
+  }}

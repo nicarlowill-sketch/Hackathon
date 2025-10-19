@@ -3,71 +3,48 @@ import { getAnalytics, isSupported } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// Firebase configuration
+// Firebase configuration - Pulse Jamaica Project
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_FIREBASE_APP_ID,
-  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+  apiKey: "AIzaSyCzORgZ1dGIIRqPTKmx1qU9A9OYY-Dl9UE",
+  authDomain: "pulse-jamaica.firebaseapp.com",
+  projectId: "pulse-jamaica",
+  storageBucket: "pulse-jamaica.firebasestorage.app",
+  messagingSenderId: "697310680153",
+  appId: "1:697310680153:web:5072bd15d84d7147b10d48",
+  measurementId: "G-8F4LYFXJ3W"
 };
 
-// Validate Firebase configuration
-const validateFirebaseConfig = () => {
-  const requiredKeys = [
-    'REACT_APP_FIREBASE_API_KEY',
-    'REACT_APP_FIREBASE_AUTH_DOMAIN',
-    'REACT_APP_FIREBASE_PROJECT_ID',
-    'REACT_APP_FIREBASE_STORAGE_BUCKET',
-    'REACT_APP_FIREBASE_MESSAGING_SENDER_ID',
-    'REACT_APP_FIREBASE_APP_ID'
-  ];
-
-  const missingKeys = requiredKeys.filter(key => !process.env[key]);
-  
-  if (missingKeys.length > 0) {
-    console.error('Missing Firebase environment variables:', missingKeys);
-    console.error('Please create a .env file with your Firebase configuration.');
-    return false;
-  }
-  
-  return true;
-};
-
-// Initialize Firebase only if configuration is valid
+// Initialize Firebase
 let app = null;
 let auth = null;
 let db = null;
 let analytics = null;
 
-if (validateFirebaseConfig()) {
-  try {
-    // Initialize Firebase
-    app = initializeApp(firebaseConfig);
-    
-    // Initialize Firebase Authentication
-    auth = getAuth(app);
-    
-    // Initialize Firestore
-    db = getFirestore(app);
-    
-    // Initialize Analytics only in browser environment and if supported
-    if (typeof window !== 'undefined') {
-      isSupported().then((supported) => {
-        if (supported && process.env.REACT_APP_FIREBASE_MEASUREMENT_ID) {
-          analytics = getAnalytics(app);
-        }
-      });
-    }
-    
-    console.log('Firebase initialized successfully');
-  } catch (error) {
-    console.error('Error initializing Firebase:', error);
+try {
+  // Initialize Firebase
+  app = initializeApp(firebaseConfig);
+  
+  // Initialize Firebase Authentication
+  auth = getAuth(app);
+  
+  // Initialize Firestore
+  db = getFirestore(app);
+  
+  // Initialize Analytics only in browser environment and if supported
+  if (typeof window !== 'undefined') {
+    isSupported().then((supported) => {
+      if (supported) {
+        analytics = getAnalytics(app);
+        console.log('Firebase Analytics initialized');
+      }
+    });
   }
-} else {
-  console.error('Firebase initialization skipped due to missing configuration');
+  
+  console.log('Firebase initialized successfully');
+  console.log('Firebase Auth ready');
+  console.log('Firestore database ready');
+} catch (error) {
+  console.error('Error initializing Firebase:', error);
 }
 
 // Export Firebase services

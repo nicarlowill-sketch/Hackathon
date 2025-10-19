@@ -8,18 +8,27 @@
 
 body {
   font-family: 'Manrope', sans-serif;
-  background: linear-gradient(135deg, #e8f5e9 0%, #fff9c4 50%, #b2ebf2 100%);
+  background: linear-gradient(135deg, #f0f8f0 0%, #fff8dc 25%, #e6f3ff 50%, #f0f8f0 75%, #fff8dc 100%);
   min-height: 100vh;
   overflow-x: hidden;
-  animation: backgroundShift 15s ease infinite;
+  animation: backgroundShift 25s ease infinite;
 }
 
 @keyframes backgroundShift {
   0%, 100% {
-    background: linear-gradient(135deg, #e8f5e9 0%, #fff9c4 50%, #b2ebf2 100%);
+    background: linear-gradient(135deg, #f0f8f0 0%, #fff8dc 25%, #e6f3ff 50%, #f0f8f0 75%, #fff8dc 100%);
   }
-  50% {
-    background: linear-gradient(135deg, #b2ebf2 0%, #e8f5e9 50%, #fff9c4 100%);
+  20% {
+    background: linear-gradient(135deg, #fff8dc 0%, #e6f3ff 25%, #f0f8f0 50%, #fff8dc 75%, #e6f3ff 100%);
+  }
+  40% {
+    background: linear-gradient(135deg, #e6f3ff 0%, #f0f8f0 25%, #fff8dc 50%, #e6f3ff 75%, #f0f8f0 100%);
+  }
+  60% {
+    background: linear-gradient(135deg, #f0f8f0 0%, #fff8dc 25%, #e6f3ff 50%, #f0f8f0 75%, #fff8dc 100%);
+  }
+  80% {
+    background: linear-gradient(135deg, #fff8dc 0%, #e6f3ff 25%, #f0f8f0 50%, #fff8dc 75%, #e6f3ff 100%);
   }
 }
 
@@ -27,8 +36,8 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #e8f5e9 0%, #fff9c4 50%, #b2ebf2 100%);
-  animation: containerGlow 10s ease infinite;
+  background: linear-gradient(135deg, #f0f8f0 0%, #fff8dc 50%, #e6f3ff 100%);
+  animation: containerGlow 12s ease infinite;
 }
 
 @keyframes containerGlow {
@@ -111,12 +120,28 @@ body {
   font-family: 'Space Grotesk', sans-serif;
   font-size: 1.75rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #00C9A7 0%, #00A8E8 100%);
+  background: linear-gradient(135deg, #2d5016 0%, #1a365d 25%, #d97706 50%, #2d5016 75%, #1a365d 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: titleShimmer 3s ease-in-out infinite;
-  text-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+  animation: titleShimmer 6s ease-in-out infinite;
+  text-shadow: 0 0 20px rgba(45, 80, 22, 0.3);
+  position: relative;
+}
+
+.app-title::after {
+  content: '🇯🇲';
+  position: absolute;
+  right: -2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  animation: flagWave 3s ease-in-out infinite;
+}
+
+@keyframes flagWave {
+  0%, 100% { transform: translateY(-50%) rotate(0deg); }
+  50% { transform: translateY(-50%) rotate(10deg); }
 }
 
 @keyframes titleShimmer {
@@ -129,11 +154,11 @@ body {
 }
 
 .dark-mode .app-title {
-  background: linear-gradient(135deg, #00E5FF 0%, #00C9A7 100%);
+  background: linear-gradient(135deg, #90cdf4 0%, #a8d5a8 50%, #90cdf4 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.5));
+  filter: drop-shadow(0 0 15px rgba(144, 205, 244, 0.5));
 }
 
 .header-actions {
@@ -412,3 +437,198 @@ body {
     font-size: 1.25rem;
   }
 }
+
+/* Connection Status */
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.connection-status.connected {
+  background-color: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.connection-status.offline {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+/* Enhanced Category Filters - Jamaican inspired */
+.category-filter button {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  font-weight: 600;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 248, 240, 0.9) 100%);
+  border: 2px solid rgba(45, 80, 22, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.category-filter button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(240, 248, 240, 1) 100%);
+}
+
+.category-filter button.active {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(240, 248, 240, 1) 100%);
+}
+
+/* Traffic category - Jamaican road colors */
+.category-filter button.traffic.active {
+  background: linear-gradient(135deg, #1a365d, #2d5016);
+  color: white;
+  border-color: #1a365d;
+}
+
+/* Food category - Jamaican food colors */
+.category-filter button.food.active {
+  background: linear-gradient(135deg, #d97706, #92400e);
+  color: white;
+  border-color: #d97706;
+}
+
+/* Event category - Jamaican celebration colors */
+.category-filter button.event.active {
+  background: linear-gradient(135deg, #2d5016, #1a365d);
+  color: white;
+  border-color: #2d5016;
+}
+
+/* Obstacle category - Warning colors */
+.category-filter button.obstacle.active {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+  color: white;
+  border-color: #dc2626;
+}
+
+/* Object category - Natural colors */
+.category-filter button.object.active {
+  background: linear-gradient(135deg, #059669, #047857);
+  color: white;
+  border-color: #059669;
+}
+
+/* Alert category - Emergency colors */
+.category-filter button.alert.active {
+  background: linear-gradient(135deg, #ea580c, #c2410c);
+  color: white;
+  border-color: #ea580c;
+}
+
+/* Enhanced Loading States */
+.add-marker-modal .submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+}
+
+.add-marker-modal .submit-btn:disabled:hover {
+  transform: none;
+}
+
+/* Success Animation */
+@keyframes successPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.success-animation {
+  animation: successPulse 0.6s ease-in-out;
+}
+
+/* Enhanced User Experience - Jamaican inspired */
+.app-container {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.app-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(45, 80, 22, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(26, 54, 93, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(217, 119, 6, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.app-container.dark-mode {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f172a 100%);
+  color: #f9fafb;
+}
+
+.app-container.dark-mode::before {
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(144, 205, 244, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(168, 213, 168, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(217, 119, 6, 0.05) 0%, transparent 50%);
+}
+
+/* Interactive Elements */
+button, .clickable {
+  transition: all 0.2s ease;
+}
+
+button:hover, .clickable:hover {
+  transform: translateY(-1px);
+}
+
+button:active, .clickable:active {
+  transform: translateY(0);
+}
+
+/* Marker Categories with Better Visual Hierarchy */
+.marker-legend {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.marker-legend h4 {
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.marker-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.marker-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Jamaican-inspired marker colors */
+.marker-legend-dot.event { background-color: #2d5016; } /* Green for events */
+.marker-legend-dot.traffic { background-color: #1a365d; } /* Blue for traffic */
+.marker-legend-dot.obstacle { background-color: #dc2626; } /* Red for obstacles */
+.marker-legend-dot.food { background-color: #d97706; } /* Orange for food */
+.marker-legend-dot.object { background-color: #059669; } /* Green for objects */
+.marker-legend-dot.alert { background-color: #ea580c; } /* Orange for alerts */
