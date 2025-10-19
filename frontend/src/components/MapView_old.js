@@ -42,19 +42,19 @@ const JAMAICA_TOWNS = [
   { name: 'Lucea', coords: [18.4509, -78.1736], minZoom: 11 }
 ];
 
-// ✅ Combine parishes and towns into one array
+// ✅ Combined locations
 const JAMAICA_LOCATIONS = [
   ...JAMAICA_PARISHES.map(p => ({ ...p, type: 'parish', parish: p.name })),
   ...JAMAICA_TOWNS.map(t => ({ ...t, type: 'town', parish: t.name }))
 ];
 
-// Marker icon builder
+// Custom marker icon
 const getMarkerIcon = (category) => {
   const icons = { event: '🎉', obstacle: '⚠️', object: '📍', alert: '🚨' };
   const colors = { event: '#00A8E8', obstacle: '#FFB627', object: '#00C9A7', alert: '#FF6B6B' };
 
   return L.divIcon({
-    html: `<div class="custom-marker" style="background-color: ${colors[category] || '#888'}">
+    html: `<div class="custom-marker" style="background-color: ${colors[category] || '#00A8E8'}">
              <span class="marker-icon">${icons[category] || '📍'}</span>
            </div>`,
     className: 'custom-div-icon',
@@ -103,7 +103,7 @@ const MapView = ({
 
     tileLayer.addTo(map);
 
-    // Add Jamaica towns/parishes
+    // Add parish/town labels
     JAMAICA_LOCATIONS.forEach(location => {
       const locationIcon = L.divIcon({
         html: `<div class="location-marker ${location.type}" data-location="${location.name}">
@@ -130,22 +130,23 @@ const MapView = ({
     return () => map.remove();
   }, []);
 
-  // ✅ Safe markers update
+  // ✅ Safe markers update with debug
   useEffect(() => {
     if (!markersLayerRef.current) return;
 
     markersLayerRef.current.clearLayers();
 
-    // ✅ Safety wrapper: ensure it's always an array
+    console.log("🧭 Incoming markers value:", markers);
+    console.log("✅ Type:", typeof markers);
+    console.log("✅ Is array:", Array.isArray(markers));
+
     const safeMarkers = Array.isArray(markers)
       ? markers
-      : markers
+      : markers && typeof markers === 'object'
       ? Object.values(markers)
       : [];
 
-    if (!Array.isArray(markers)) {
-      console.warn('⚠️ Non-array markers detected. Converted safely:', markers);
-    }
+    console.log("🧩 Processed markers array:", safeMarkers);
 
     safeMarkers.forEach((marker) => {
       if (!marker || !marker.latitude || !marker.longitude) return;
