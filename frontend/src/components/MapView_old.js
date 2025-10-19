@@ -42,7 +42,7 @@ const JAMAICA_TOWNS = [
   { name: 'Lucea', coords: [18.4509, -78.1736], minZoom: 11 }
 ];
 
-// ✅ FIXED: Combine parishes and towns into one array
+// ✅ Combine parishes and towns into one array
 const JAMAICA_LOCATIONS = [
   ...JAMAICA_PARISHES.map(p => ({ ...p, type: 'parish', parish: p.name })),
   ...JAMAICA_TOWNS.map(t => ({ ...t, type: 'town', parish: t.name }))
@@ -54,8 +54,8 @@ const getMarkerIcon = (category) => {
   const colors = { event: '#00A8E8', obstacle: '#FFB627', object: '#00C9A7', alert: '#FF6B6B' };
 
   return L.divIcon({
-    html: `<div class="custom-marker" style="background-color: ${colors[category]}">
-             <span class="marker-icon">${icons[category]}</span>
+    html: `<div class="custom-marker" style="background-color: ${colors[category] || '#888'}">
+             <span class="marker-icon">${icons[category] || '📍'}</span>
            </div>`,
     className: 'custom-div-icon',
     iconSize: [40, 40],
@@ -103,7 +103,7 @@ const MapView = ({
 
     tileLayer.addTo(map);
 
-    // ✅ Use the fixed JAMAICA_LOCATIONS
+    // Add Jamaica towns/parishes
     JAMAICA_LOCATIONS.forEach(location => {
       const locationIcon = L.divIcon({
         html: `<div class="location-marker ${location.type}" data-location="${location.name}">
@@ -130,27 +130,33 @@ const MapView = ({
     return () => map.remove();
   }, []);
 
-  // ✅ Update markers safely
+  // ✅ Safe markers update
   useEffect(() => {
     if (!markersLayerRef.current) return;
 
     markersLayerRef.current.clearLayers();
 
-    // ✅ SAFETY CHECK
-    const safeMarkers = Array.isArray(markers) ? markers : [];
+    // ✅ Safety wrapper: ensure it's always an array
+    const safeMarkers = Array.isArray(markers)
+      ? markers
+      : markers
+      ? Object.values(markers)
+      : [];
 
     if (!Array.isArray(markers)) {
-      console.warn('⚠️ Expected markers to be an array, got:', typeof markers);
+      console.warn('⚠️ Non-array markers detected. Converted safely:', markers);
     }
 
     safeMarkers.forEach((marker) => {
+      if (!marker || !marker.latitude || !marker.longitude) return;
+
       const icon = getMarkerIcon(marker.category);
       const leafletMarker = L.marker([marker.latitude, marker.longitude], { icon });
       const popupContent = `
         <div class="marker-popup">
-          <h3>${marker.title}</h3>
-          <p class="category-badge ${marker.category}">${marker.category.toUpperCase()}</p>
-          <p>${marker.description}</p>
+          <h3>${marker.title || 'Untitled'}</h3>
+          <p class="category-badge ${marker.category}">${(marker.category || 'object').toUpperCase()}</p>
+          <p>${marker.description || ''}</p>
           ${marker.image ? `<img src="${marker.image}" alt="${marker.title}" />` : ''}
           ${currentUser && currentUser.id === marker.user_id ? `
             <button onclick="window.deleteMarker('${marker.id}')">🗑️ Delete</button>` : ''}
