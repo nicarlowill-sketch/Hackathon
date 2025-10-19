@@ -20,7 +20,7 @@ const ParishDomain = ({
   // Parish-specific data
   const parishStats = {
     totalMarkers: markers.length,
-    activeUsers: Math.floor(Math.random() * 50) + 10, // Mock data
+    activeUsers: markers.filter(m => m.userId).length, // Real user count
     recentActivity: markers.filter(m => 
       new Date(m.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)
     ).length,
@@ -55,8 +55,12 @@ const ParishDomain = ({
         filtered.sort((a, b) => (b.likes || 0) - (a.likes || 0));
         break;
       case 'distance':
-        // Sort by distance from parish center (mock implementation)
-        filtered.sort((a, b) => Math.random() - 0.5);
+        // Sort by distance from parish center
+        filtered.sort((a, b) => {
+          const distanceA = Math.sqrt(Math.pow(a.lat - 18.1096, 2) + Math.pow(a.lng + 77.2975, 2));
+          const distanceB = Math.sqrt(Math.pow(b.lat - 18.1096, 2) + Math.pow(b.lng + 77.2975, 2));
+          return distanceA - distanceB;
+        });
         break;
     }
 

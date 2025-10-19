@@ -4,6 +4,48 @@
   overflow-y: auto;
 }
 
+/* Text color integration for light/dark mode */
+.marker-input-text {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+}
+
+.dark-mode .marker-input-text {
+  color: #ffffff !important;
+  background-color: #2a2a3e !important;
+}
+
+/* Ensure all input fields have proper text visibility */
+input[type="text"],
+input[type="email"],
+textarea,
+select {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+}
+
+.dark-mode input[type="text"],
+.dark-mode input[type="email"],
+.dark-mode textarea,
+.dark-mode select {
+  color: #ffffff !important;
+  background-color: #2a2a3e !important;
+  border-color: #4a4a5e !important;
+}
+
+.dark-mode .add-marker-modal {
+  background: #1a1a2e;
+  color: #ffffff;
+}
+
+.dark-mode .modal-title {
+  color: #ffffff;
+  background: linear-gradient(135deg, #00C9A7 0%, #00A8E8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .modal-title {
   font-family: 'Space Grotesk', sans-serif;
   font-size: 1.75rem;

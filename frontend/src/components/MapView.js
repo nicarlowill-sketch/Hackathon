@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Search, MapPin } from 'lucide-react';
 import './MapView.css';
 
 const JAMAICA_CENTER = [18.1096, -77.2975];
@@ -42,27 +44,24 @@ const JAMAICA_TOWNS = [
 
 const getMarkerColor = (category) => {
   const colors = {
-    event: '#2d5016',      // Jamaican green for events
-    traffic: '#1a365d',    // Jamaican blue for traffic
-    hazard: '#dc2626',     // Red for hazards
-    weather: '#059669',    // Green for weather
-    crime: '#ea580c',      // Orange for crime
-    food: '#d97706',       // Orange for food
+    event: '#00ffff',      // Neon cyan for events
+    traffic: '#00a8e8',    // Neon blue for traffic
+    hazard: '#ff6b6b',     // Neon red for hazards
+    weather: '#00c9a7',    // Neon green for weather
+    crime: '#ffa500',      // Neon orange for crime
+    food: '#ffd700',       // Neon yellow for food
     service: '#8b5cf6',    // Purple for services
-    object: '#059669'      // Green for objects
+    object: '#00ff88'      // Neon green for objects
   };
-  return colors[category] || '#059669';
+  return colors[category] || '#00ff88';
 };
 
-const getMarkerSize = (urgency) => {
-  const sizes = {
-    low: 6,
-    normal: 8,
-    high: 12,
-    critical: 16
-  };
-  return sizes[urgency] || 8;
+const getMarkerSize = () => {
+  // Use a consistent, smaller size for all markers (category-based, not urgency)
+  return 6;
 };
+
+// Parish icons removed - using default map template
 
 // Helper: safely normalize marker input
 const normalizeMarkers = (data) => {
@@ -74,9 +73,11 @@ const normalizeMarkers = (data) => {
 const MapView = ({
   markers,
   selectedMarker,
+  highlightedMarker,
   onMarkerClick,
   onMapClick,
   onLocationMarker,
+  onEventMarker,
   onDeleteMarker,
   currentUser,
   darkMode,
@@ -88,7 +89,9 @@ const MapView = ({
   const labelsLayerRef = useRef(null);
   const [currentZoom, setCurrentZoom] = useState(9);
   const [gettingLocation, setGettingLocation] = useState(false);
-  const [selectedParish, setSelectedParish] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
 
   // Initialize map
   useEffect(() => {
@@ -104,7 +107,7 @@ const MapView = ({
       zoom: 9,
       zoomControl: true,
       minZoom: 8,
-      maxZoom: 16,
+      maxZoom: 18,
       maxBounds: jamaicaBounds,
       maxBoundsViscosity: 0.8
     });
@@ -113,11 +116,11 @@ const MapView = ({
       ? L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
           attribution: '&copy; OpenStreetMap &copy; CARTO',
           subdomains: 'abcd',
-          maxZoom: 16
+          maxZoom: 18
         })
       : L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
           attribution: '&copy; OpenStreetMap &copy; CARTO',
-          maxZoom: 16
+          maxZoom: 18
         });
 
     tileLayer.addTo(map);
@@ -126,7 +129,7 @@ const MapView = ({
     markersLayerRef.current = L.layerGroup().addTo(map);
     labelsLayerRef.current = L.layerGroup().addTo(map);
 
-    // Add map click handler
+    // Enable map click to add markers
     map.on('click', (e) => {
       onMapClick(e.latlng.lat, e.latlng.lng);
     });
@@ -154,131 +157,109 @@ const MapView = ({
       ? L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
           attribution: '&copy; OpenStreetMap &copy; CARTO',
           subdomains: 'abcd',
-          maxZoom: 16
+          maxZoom: 18
         })
       : L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
           attribution: '&copy; OpenStreetMap &copy; CARTO',
-          maxZoom: 16
+          maxZoom: 18
         });
 
     tileLayer.addTo(map);
   }, [darkMode]);
 
-  // Render parish and town labels
+  // Render parish and town labels (non-interactive)
   useEffect(() => {
     if (!labelsLayerRef.current || !mapInstanceRef.current) return;
     
     labelsLayerRef.current.clearLayers();
 
-    // Only show parish labels if not in a specific parish view
-    if (!selectedParish && currentZoom <= 9) {
-      JAMAICA_PARISHES.forEach((parish) => {
-        const parishLabel = L.divIcon({
-          html: `<div class="parish-label clickable-parish" data-parish="${parish.name}">${parish.name}</div>`,
-          className: 'custom-label-icon',
-          iconSize: [120, 30],
-          iconAnchor: [60, 15]
-        });
-        
-        const marker = L.marker(parish.coords, { icon: parishLabel });
-        
-        // Add click event to zoom to parish
-        marker.on('click', (e) => {
-          console.log(`Clicked on ${parish.name} parish`);
-          setSelectedParish(parish.name);
-          
-          // Add visual feedback
-          e.target.getElement().style.transform = 'scale(0.95)';
-          setTimeout(() => {
-            if (e.target.getElement()) {
-              e.target.getElement().style.transform = 'scale(1)';
-            }
-          }, 150);
-          
-          mapInstanceRef.current.setView(parish.coords, 12, {
-            animate: true,
-            duration: 1.5
-          });
-          
-          if (onParishClick) {
-            onParishClick(parish.name);
-          }
-        });
-        
-        marker.addTo(labelsLayerRef.current);
-      });
-    } else if (!selectedParish) {
+    // Parish labels removed - using default map template
+    // Show town labels at higher zoom levels
+    if (currentZoom >= 10) {
       JAMAICA_TOWNS.forEach((town) => {
         if (currentZoom >= town.minZoom) {
           const townLabel = L.divIcon({
             html: `<div class="town-label">${town.name}</div>`,
             className: 'custom-label-icon',
-            iconSize: [80, 20],
-            iconAnchor: [40, 10]
+            iconSize: [70, 18],
+            iconAnchor: [35, 9]
           });
           L.marker(town.coords, { icon: townLabel }).addTo(labelsLayerRef.current);
         }
       });
     }
-  }, [currentZoom, selectedParish, onParishClick]);
+  }, [currentZoom]);
 
-  // Handle map zoom changes and parish exit detection
+  // Handle map zoom changes
   useEffect(() => {
     if (mapInstanceRef.current) {
       const handleZoom = () => {
         const newZoom = mapInstanceRef.current.getZoom();
         setCurrentZoom(newZoom);
-        
-        // Exit parish view if zoomed out too far
-        if (selectedParish && newZoom < 10) {
-          setSelectedParish(null);
-          if (onParishClick) {
-            onParishClick(null);
-          }
-        }
-      };
-      
-      const handleMove = () => {
-        if (selectedParish) {
-          const center = mapInstanceRef.current.getCenter();
-          const parish = JAMAICA_PARISHES.find(p => p.name === selectedParish);
-          if (parish) {
-            const distance = center.distanceTo(L.latLng(parish.coords));
-            // Exit parish if moved too far away (about 50km)
-            if (distance > 50000) {
-              setSelectedParish(null);
-              if (onParishClick) {
-                onParishClick(null);
-              }
-            }
-          }
-        }
       };
       
       mapInstanceRef.current.on('zoomend', handleZoom);
-      mapInstanceRef.current.on('moveend', handleMove);
       
       return () => {
         if (mapInstanceRef.current) {
           mapInstanceRef.current.off('zoomend', handleZoom);
-          mapInstanceRef.current.off('moveend', handleMove);
         }
       };
     }
-  }, [selectedParish, onParishClick]);
+  }, []);
+
+  // Handle highlighted marker from feed navigation
+  useEffect(() => {
+    if (highlightedMarker && mapInstanceRef.current) {
+      const markerCoords = [highlightedMarker.latitude, highlightedMarker.longitude];
+      
+      // Zoom to marker
+      mapInstanceRef.current.setView(markerCoords, 14, {
+        animate: true,
+        duration: 1.5
+      });
+
+      // Open popup after zoom animation
+      setTimeout(() => {
+        // Find the marker element and trigger click to open popup
+        const markerElements = document.querySelectorAll('.pulse-marker');
+        markerElements.forEach(element => {
+          const marker = L.DomEvent.getEventTarget(element);
+          if (marker && marker._latlng) {
+            const lat = marker._latlng.lat;
+            const lng = marker._latlng.lng;
+            if (Math.abs(lat - highlightedMarker.latitude) < 0.0001 && 
+                Math.abs(lng - highlightedMarker.longitude) < 0.0001) {
+              marker.openPopup();
+            }
+          }
+        });
+      }, 2000);
+    }
+  }, [highlightedMarker]);
 
   // Render markers
   useEffect(() => {
     if (!markersLayerRef.current) return;
 
+    console.log('MapView received markers:', markers.length);
+    console.log('Markers data:', markers);
+    
     markersLayerRef.current.clearLayers();
     const safeMarkers = normalizeMarkers(markers);
     
+    console.log('Safe markers after normalization:', safeMarkers.length);
+    
     safeMarkers.forEach((marker) => {
-      if (!marker || !marker.latitude || !marker.longitude) return;
+      if (!marker || !marker.latitude || !marker.longitude) {
+        console.log('Skipping invalid marker:', marker);
+        return;
+      }
+      
+      console.log('Creating marker:', marker.title, 'at', marker.latitude, marker.longitude);
       
       const color = getMarkerColor(marker.category);
-      const markerSize = getMarkerSize(marker.urgency);
+      const markerSize = getMarkerSize();
       
       const leafletMarker = L.circleMarker([marker.latitude, marker.longitude], {
         radius: markerSize,
@@ -287,7 +268,7 @@ const MapView = ({
         weight: 3,
         opacity: 1,
         fillOpacity: 0.9,
-        className: 'pulse-marker'
+        className: 'pulse-marker neon-marker'
       });
 
       const updateTime = new Date(marker.updatedAt || marker.createdAt).toLocaleString();
@@ -328,6 +309,8 @@ const MapView = ({
       leafletMarker.bindPopup(popupContent);
       leafletMarker.on('click', () => onMarkerClick(marker));
       leafletMarker.addTo(markersLayerRef.current);
+      
+      console.log('Marker added to map:', marker.title);
     });
 
     // Set up global delete function
@@ -337,6 +320,56 @@ const MapView = ({
       }
     };
   }, [markers, currentUser, onMarkerClick, onDeleteMarker]);
+
+  // Search functionality
+  const handleSearch = (query) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+
+    const results = [];
+    const searchTerm = query.toLowerCase();
+
+    // Search parishes
+    JAMAICA_PARISHES.forEach(parish => {
+      if (parish.name.toLowerCase().includes(searchTerm)) {
+        results.push({
+          type: 'parish',
+          name: parish.name,
+          coords: parish.coords,
+          zoom: 12
+        });
+      }
+    });
+
+    // Search towns
+    JAMAICA_TOWNS.forEach(town => {
+      if (town.name.toLowerCase().includes(searchTerm)) {
+        results.push({
+          type: 'town',
+          name: town.name,
+          coords: town.coords,
+          zoom: town.minZoom
+        });
+      }
+    });
+
+    setSearchResults(results);
+    setShowSearchResults(true);
+  };
+
+  const handleSearchResultClick = (result) => {
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.setView(result.coords, result.zoom, {
+        animate: true,
+        duration: 2
+      });
+    }
+    setShowSearchResults(false);
+    setSearchQuery('');
+  };
 
   const getUserLocation = () => {
     if (!navigator.geolocation) {
@@ -349,7 +382,10 @@ const MapView = ({
       (position) => {
         const { latitude, longitude } = position.coords;
         onLocationMarker(latitude, longitude);
-        mapInstanceRef.current.setView([latitude, longitude], 14);
+        mapInstanceRef.current.setView([latitude, longitude], 14, {
+          animate: true,
+          duration: 1.5
+        });
         setGettingLocation(false);
       },
       (error) => {
@@ -361,17 +397,149 @@ const MapView = ({
     );
   };
 
+  const addMarkerAtExactLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setGettingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        // Use high precision coordinates
+        onLocationMarker(latitude, longitude);
+        mapInstanceRef.current.setView([latitude, longitude], 16, {
+          animate: true,
+          duration: 1.5
+        });
+        setGettingLocation(false);
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+        alert('Unable to retrieve your location.');
+        setGettingLocation(false);
+      },
+      { 
+        enableHighAccuracy: true, 
+        timeout: 15000, 
+        maximumAge: 0 
+      }
+    );
+  };
+
+  const addEventMarker = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setGettingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        // Call the event marker handler with event type
+        onEventMarker(latitude, longitude);
+        mapInstanceRef.current.setView([latitude, longitude], 16, {
+          animate: true,
+          duration: 1.5
+        });
+        setGettingLocation(false);
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+        alert('Unable to retrieve your location.');
+        setGettingLocation(false);
+      },
+      { 
+        enableHighAccuracy: true, 
+        timeout: 15000, 
+        maximumAge: 0 
+      }
+    );
+  };
+
   return (
     <div className="map-container" data-testid="map-view">
       <div ref={mapRef} className="leaflet-map"></div>
-      <Button
-        className="locate-me-button"
-        onClick={getUserLocation}
-        disabled={gettingLocation}
-        data-testid="locate-me-button"
-      >
-        {gettingLocation ? 'Locating...' : 'Use My Location'}
-      </Button>
+      
+      {/* Map Interaction Notice */}
+      <div className="location-requirement-notice">
+        <div className="notice-content">
+          <span className="notice-icon">📍</span>
+          <div className="notice-text-container">
+            <span className="notice-title">Add Markers</span>
+            <span className="notice-subtitle">Click anywhere on the map or use GPS location</span>
+          </div>
+        </div>
+      </div>
+      
+      {/* Search Bar */}
+      <div className="map-search-container">
+        <div className="search-input-wrapper">
+          <Search className="search-icon" size={20} />
+          <Input
+            type="text"
+            placeholder="Search parishes, towns, or cities..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              handleSearch(e.target.value);
+            }}
+            className="map-search-input"
+            data-testid="map-search-input"
+          />
+        </div>
+        
+        {/* Search Results */}
+        {showSearchResults && searchResults.length > 0 && (
+          <div className="search-results">
+            {searchResults.map((result, index) => (
+              <div
+                key={index}
+                className="search-result-item"
+                onClick={() => handleSearchResultClick(result)}
+              >
+                <MapPin size={16} />
+                <span className="result-name">{result.name}</span>
+                <span className="result-type">{result.type}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      
+      {/* Location and Event Marker Buttons */}
+      <div className="marker-buttons-container">
+        <button
+          className="location-marker-button"
+          onClick={addMarkerAtExactLocation}
+          disabled={gettingLocation}
+          data-testid="location-marker-button"
+        >
+          {gettingLocation ? (
+            <>
+              <span className="button-icon">⏳</span>
+              <span className="button-text">Getting Location...</span>
+            </>
+          ) : (
+            <>
+              <span className="button-icon">🎯</span>
+              <span className="button-text">Add Marker at My Location</span>
+            </>
+          )}
+        </button>
+        
+        <button
+          className="event-marker-button"
+          onClick={addEventMarker}
+          disabled={gettingLocation}
+          data-testid="event-marker-button"
+        >
+          <span className="button-icon">🎉</span>
+          <span className="button-text">Add Event Marker</span>
+        </button>
+      </div>
     </div>
   );
 };

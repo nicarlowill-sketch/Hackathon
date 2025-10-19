@@ -22,8 +22,10 @@ const AddMarkerModal = ({ isOpen, onClose, onSubmit, position, currentUser }) =>
   const [image, setImage] = useState('');
   const [images, setImages] = useState([]);
   const [urgency, setUrgency] = useState('normal');
-  const [tags, setTags] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [filteredTitle, setFilteredTitle] = useState('');
+  const [filteredDescription, setFilteredDescription] = useState('');
   const fileInputRef = useRef(null);
 
   // Enhanced image handling with multiple images
@@ -81,10 +83,9 @@ const AddMarkerModal = ({ isOpen, onClose, onSubmit, position, currentUser }) =>
         latitude: position.lat,
         longitude: position.lng,
         urgency,
-        tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
         images: images.map(img => img.url),
         userId: currentUser?.id,
-        userEmail: currentUser?.email
+        userEmail: (isAnonymous && category === 'crime') ? 'Anonymous' : currentUser?.email
       };
 
       await onSubmit(markerData);
@@ -96,7 +97,7 @@ const AddMarkerModal = ({ isOpen, onClose, onSubmit, position, currentUser }) =>
       setImage('');
       setImages([]);
       setUrgency('normal');
-      setTags('');
+      setIsAnonymous(false);
     } catch (error) {
       console.error('Marker submission failed:', error);
       // Keep form data on error so user can retry
@@ -124,6 +125,7 @@ const AddMarkerModal = ({ isOpen, onClose, onSubmit, position, currentUser }) =>
               placeholder="What's happening?"
               required
               data-testid="marker-title-input"
+              className="marker-input-text"
             />
           </div>
 
@@ -156,6 +158,7 @@ const AddMarkerModal = ({ isOpen, onClose, onSubmit, position, currentUser }) =>
               required
               rows={4}
               data-testid="marker-description-input"
+              className="marker-input-text"
             />
           </div>
 
@@ -175,18 +178,24 @@ const AddMarkerModal = ({ isOpen, onClose, onSubmit, position, currentUser }) =>
             </Select>
           </div>
 
-          {/* Tags */}
-          <div className="form-group">
-            <Label htmlFor="tags">Tags (Optional)</Label>
-            <Input
-              id="tags"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              placeholder="traffic, accident, roadwork (comma separated)"
-              data-testid="marker-tags-input"
-            />
-            <p className="form-hint">Add relevant tags to help others find your post</p>
-          </div>
+
+          {/* Anonymous posting for crime markers */}
+          {category === 'crime' && (
+            <div className="form-group">
+              <div className="checkbox-group">
+                <input
+                  type="checkbox"
+                  id="anonymous"
+                  checked={isAnonymous}
+                  onChange={(e) => setIsAnonymous(e.target.checked)}
+                  data-testid="anonymous-checkbox"
+                />
+                <Label htmlFor="anonymous" className="checkbox-label">
+                  Post anonymously (hide your email for crime reports)
+                </Label>
+              </div>
+            </div>
+          )}
 
           {/* Enhanced Image Upload */}
           <div className="form-group">

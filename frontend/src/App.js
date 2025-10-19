@@ -41,6 +41,7 @@ function App() {
   const [markers, setMarkers] = useState([]);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [viewMode, setViewMode] = useState('map'); // 'map', 'feed', 'parish', or 'firebase'
+  const [highlightedMarker, setHighlightedMarker] = useState(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [connectionStatus, setConnectionStatus] = useState('connected');
   const [selectedParish, setSelectedParish] = useState('Kingston');
@@ -93,7 +94,16 @@ function App() {
   // Fetch markers from Firebase
   useEffect(() => {
     fetchMarkers();
-  }, [categoryFilter]);
+  }, []);
+
+  // Filter markers based on category
+  const filteredMarkers = categoryFilter 
+    ? markers.filter(marker => marker.category === categoryFilter)
+    : markers;
+  
+  console.log('Total markers in state:', markers.length);
+  console.log('Filtered markers:', filteredMarkers.length);
+  console.log('Category filter:', categoryFilter);
 
   // Generate sample markers for demonstration
   const generateSampleMarkers = () => {
@@ -196,19 +206,393 @@ function App() {
         userEmail: 'banking@jamaica.com',
         createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
         updatedAt: new Date(Date.now() - 5 * 60 * 60 * 1000)
-      }
-    ];
-    return sampleMarkers;
+      },
+      {
+        id: 'sample-8',
+        title: 'Street Art Mural - Trench Town',
+        category: 'culture',
+        description: 'Beautiful new mural celebrating Bob Marley\'s legacy in Trench Town. Perfect for photos!',
+        latitude: 17.9911,
+        longitude: -76.7833,
+        urgency: 'low',
+        userEmail: 'art@jamaica.com',
+        createdAt: new Date(Date.now() - 22 * 60 * 60 * 1000),
+        updatedAt: new Date(Date.now() - 22 * 60 * 60 * 1000),
+        images: ['https://images.unsplash.com/photo-1549490349-8643362247b5?w=400&h=300&fit=crop']
+      },
+      {
+        id: 'sample-9',
+        title: 'WiFi Hotspot - New Kingston',
+        category: 'service',
+        description: 'Free public WiFi available at Emancipation Park. Great for remote work!',
+        latitude: 18.0167,
+        longitude: -76.7833,
+        urgency: 'normal',
+        userEmail: 'tech@jamaica.com',
+        createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+        updatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
+      },
+      {
+        id: 'sample-10',
+        title: 'Lost Dog Found - Spanish Town',
+        category: 'service',
+        description: 'Found a friendly golden retriever near Spanish Town Square. Contact if this is your dog.',
+        latitude: 17.9911,
+        longitude: -76.9567,
+        urgency: 'normal',
+        userEmail: 'help@jamaica.com',
+        createdAt: new Date(Date.now() - 26 * 60 * 60 * 1000),
+        updatedAt: new Date(Date.now() - 26 * 60 * 60 * 1000)
+      },
+      {
+        id: 'sample-11',
+        title: 'Yoga Class - Montego Bay',
+        category: 'health',
+        description: 'Free yoga session on the beach every morning at 6 AM. All levels welcome!',
+        latitude: 18.4667,
+        longitude: -77.9167,
+        urgency: 'low',
+        userEmail: 'wellness@jamaica.com',
+        createdAt: new Date(Date.now() - 28 * 60 * 60 * 1000),
+        updatedAt: new Date(Date.now() - 28 * 60 * 60 * 1000),
+        images: ['https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop']
+      },
+      {
+        id: 'sample-12',
+        title: 'ATM Out of Service - Half Way Tree',
+        category: 'service',
+        description: 'ATM at Half Way Tree Square is not working. Nearest working ATM is at New Kingston.',
+        latitude: 18.0167,
+        longitude: -76.7833,
+        urgency: 'high',
+        userEmail: 'banking@jamaica.com',
+        createdAt: new Date(Date.now() - 30 * 60 * 60 * 1000),
+        updatedAt: new Date(Date.now() - 30 * 60 * 60 * 1000)
+      },
+      {
+        id: 'sample-13',
+        title: 'Garage Sale - Mandeville',
+        category: 'shopping',
+        description: 'Huge garage sale with furniture, electronics, and books. Great deals available!',
+        latitude: 18.0333,
+        longitude: -77.5000,
+        urgency: 'normal',
+        userEmail: 'sale@jamaica.com',
+        createdAt: new Date(Date.now() - 32 * 60 * 60 * 1000),
+        updatedAt: new Date(Date.now() - 32 * 60 * 60 * 1000),
+        images: ['https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop']
+      },
+      {
+        id: 'sample-14',
+        title: 'Car Wash Service - Portmore',
+        category: 'service',
+        description: 'Professional car wash and detailing service. Same day service available.',
+        latitude: 17.9500,
+        longitude: -76.8833,
+        urgency: 'low',
+        userEmail: 'auto@jamaica.com',
+        createdAt: new Date(Date.now() - 34 * 60 * 60 * 1000),
+        updatedAt: new Date(Date.now() - 34 * 60 * 60 * 1000)
+      },
+      {
+        id: 'sample-15',
+        title: 'Basketball Tournament - Kingston',
+        category: 'sports',
+        description: 'Street basketball tournament this weekend. Registration open to all teams.',
+        latitude: 18.0179,
+        longitude: -76.8099,
+        urgency: 'normal',
+        userEmail: 'sports@jamaica.com',
+        createdAt: new Date(Date.now() - 36 * 60 * 60 * 1000),
+        updatedAt: new Date(Date.now() - 36 * 60 * 60 * 1000),
+        images: ['https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop']
+      },
+      {
+        id: 'sample-16',
+        title: 'Power Outage - May Pen',
+        category: 'utility',
+        description: 'Scheduled power outage in May Pen area from 2 PM to 6 PM for maintenance.',
+        latitude: 18.0167,
+        longitude: -76.9500,
+        urgency: 'high',
+        userEmail: 'jps@jamaica.com',
+        createdAt: new Date(Date.now() - 38 * 60 * 60 * 1000),
+        updatedAt: new Date(Date.now() - 38 * 60 * 60 * 1000)
+      },
+      {
+        id: 'sample-17',
+        title: 'Farmers Market - St. Ann',
+        category: 'shopping',
+        description: 'Fresh local produce and organic vegetables. Best prices in the area!',
+        latitude: 18.4333,
+        longitude: -77.2000,
+        urgency: 'low',
+        userEmail: 'farmers@jamaica.com',
+        createdAt: new Date(Date.now() - 40 * 60 * 60 * 1000),
+        updatedAt: new Date(Date.now() - 40 * 60 * 60 * 1000),
+        images: ['https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=400&h=300&fit=crop']
+      },
+      {
+        id: 'sample-18',
+        title: 'Book Exchange - Spanish Town',
+        category: 'education',
+        description: 'Free book exchange program. Bring a book, take a book. Great for students!',
+        latitude: 17.9911,
+        longitude: -76.9567,
+        urgency: 'low',
+        userEmail: 'books@jamaica.com',
+        createdAt: new Date(Date.now() - 42 * 60 * 60 * 1000),
+        updatedAt: new Date(Date.now() - 42 * 60 * 60 * 1000)
+      },
+      {
+        id: 'sample-19',
+        title: 'Pet Grooming Service - Montego Bay',
+        category: 'service',
+        description: 'Professional pet grooming and boarding services. Experienced with all breeds.',
+        latitude: 18.4667,
+        longitude: -77.9167,
+        urgency: 'normal',
+        userEmail: 'pets@jamaica.com',
+        createdAt: new Date(Date.now() - 44 * 60 * 60 * 1000),
+        updatedAt: new Date(Date.now() - 44 * 60 * 60 * 1000),
+        images: ['https://images.unsplash.com/photo-1551717743-49959800b1f6?w=400&h=300&fit=crop']
+      },
+      {
+        id: 'sample-20',
+        title: 'Dance Class - Kingston',
+        category: 'entertainment',
+        description: 'Free dance classes every Tuesday and Thursday. Learn reggae and dancehall moves!',
+        latitude: 18.0179,
+        longitude: -76.8099,
+        urgency: 'normal',
+        userEmail: 'dance@jamaica.com',
+        createdAt: new Date(Date.now() - 46 * 60 * 60 * 1000),
+        updatedAt: new Date(Date.now() - 46 * 60 * 60 * 1000),
+        images: ['https://images.unsplash.com/photo-1504609813442-a8924e83f76e?w=400&h=300&fit=crop']
+      },
+      {
+        id: 'sample-21',
+        title: 'Water Shortage - Portmore',
+        category: 'utility',
+        description: 'Water supply interruption in Portmore area. Water trucks will be available.',
+        latitude: 17.9500,
+        longitude: -76.8833,
+        urgency: 'critical',
+        userEmail: 'water@jamaica.com',
+        createdAt: new Date(Date.now() - 48 * 60 * 60 * 1000),
+        updatedAt: new Date(Date.now() - 48 * 60 * 60 * 1000)
+      },
+             {
+               id: 'sample-22',
+               title: 'Tech Meetup - New Kingston',
+               category: 'technology',
+               description: 'Monthly tech meetup for developers and entrepreneurs. Networking and presentations.',
+               latitude: 18.0167,
+               longitude: -76.7833,
+               urgency: 'normal',
+               userEmail: 'tech@jamaica.com',
+               createdAt: new Date(Date.now() - 50 * 60 * 60 * 1000),
+               updatedAt: new Date(Date.now() - 50 * 60 * 60 * 1000),
+               images: ['https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=300&fit=crop']
+             },
+             // Additional demo markers for better coverage
+             {
+               id: 'demo-1',
+               title: 'Reggae Concert - Bob Marley Museum',
+               category: 'entertainment',
+               description: 'Live reggae performance at the Bob Marley Museum. Free admission!',
+               latitude: 18.0167,
+               longitude: -76.7833,
+               urgency: 'normal',
+               userEmail: 'music@jamaica.com',
+               createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
+               updatedAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
+               images: ['https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop']
+             },
+             {
+               id: 'demo-2',
+               title: 'Dunn\'s River Falls - Tourist Alert',
+               category: 'tourism',
+               description: 'Crowded today! Best time to visit is early morning or late afternoon.',
+               latitude: 18.4333,
+               longitude: -77.2000,
+               urgency: 'normal',
+               userEmail: 'tourism@jamaica.com',
+               createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
+               updatedAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
+               images: ['https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop']
+             },
+             {
+               id: 'demo-3',
+               title: 'Blue Mountain Coffee Tour',
+               category: 'tourism',
+               description: 'Guided tour of coffee plantations. Learn about Jamaica\'s famous coffee!',
+               latitude: 18.1000,
+               longitude: -76.6500,
+               urgency: 'low',
+               userEmail: 'coffee@jamaica.com',
+               createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
+               updatedAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
+               images: ['https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400&h=300&fit=crop']
+             },
+             {
+               id: 'demo-4',
+               title: 'Road Closure - Constant Spring Road',
+               category: 'traffic',
+               description: 'Road closed for water main repairs. Use alternative routes.',
+               latitude: 18.0167,
+               longitude: -76.7833,
+               urgency: 'high',
+               userEmail: 'traffic@jamaica.com',
+               createdAt: new Date(Date.now() - 7 * 60 * 60 * 1000),
+               updatedAt: new Date(Date.now() - 7 * 60 * 60 * 1000)
+             },
+             {
+               id: 'demo-5',
+               title: 'Beach Cleanup - Hellshire Beach',
+               category: 'service',
+               description: 'Community beach cleanup this Saturday. Volunteers needed!',
+               latitude: 17.9500,
+               longitude: -76.8833,
+               urgency: 'normal',
+               userEmail: 'community@jamaica.com',
+               createdAt: new Date(Date.now() - 9 * 60 * 60 * 1000),
+               updatedAt: new Date(Date.now() - 9 * 60 * 60 * 1000),
+               images: ['https://images.unsplash.com/photo-1505994300880-f11198b0d90e?w=400&h=300&fit=crop']
+             },
+             {
+               id: 'demo-6',
+               title: 'Cricket Match - Sabina Park',
+               category: 'sports',
+               description: 'West Indies vs England test match. Tickets available at gate.',
+               latitude: 18.0167,
+               longitude: -76.7833,
+               urgency: 'normal',
+               userEmail: 'sports@jamaica.com',
+               createdAt: new Date(Date.now() - 11 * 60 * 60 * 1000),
+               updatedAt: new Date(Date.now() - 11 * 60 * 60 * 1000),
+               images: ['https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop']
+             },
+             {
+               id: 'demo-7',
+               title: 'Art Gallery Opening - National Gallery',
+               category: 'culture',
+               description: 'New exhibition featuring local Jamaican artists. Free admission.',
+               latitude: 18.0167,
+               longitude: -76.7833,
+               urgency: 'low',
+               userEmail: 'art@jamaica.com',
+               createdAt: new Date(Date.now() - 13 * 60 * 60 * 1000),
+               updatedAt: new Date(Date.now() - 13 * 60 * 60 * 1000),
+               images: ['https://images.unsplash.com/photo-1549490349-8643362247b5?w=400&h=300&fit=crop']
+             },
+             {
+               id: 'demo-8',
+               title: 'Medical Emergency - Spanish Town Hospital',
+               category: 'health',
+               description: 'Emergency services available 24/7. Ambulance on standby.',
+               latitude: 17.9911,
+               longitude: -76.9567,
+               urgency: 'critical',
+               userEmail: 'health@jamaica.com',
+               createdAt: new Date(Date.now() - 15 * 60 * 60 * 1000),
+               updatedAt: new Date(Date.now() - 15 * 60 * 60 * 1000)
+             },
+             {
+               id: 'demo-9',
+               title: 'Fishing Tournament - Port Royal',
+               category: 'sports',
+               description: 'Annual fishing tournament. Prizes for biggest catch!',
+               latitude: 17.9333,
+               longitude: -76.8333,
+               urgency: 'normal',
+               userEmail: 'fishing@jamaica.com',
+               createdAt: new Date(Date.now() - 17 * 60 * 60 * 1000),
+               updatedAt: new Date(Date.now() - 17 * 60 * 60 * 1000),
+               images: ['https://images.unsplash.com/photo-1544551763-46a013bb2dcc?w=400&h=300&fit=crop']
+             },
+             {
+               id: 'demo-10',
+               title: 'Market Day - Coronation Market',
+               category: 'shopping',
+               description: 'Fresh produce, spices, and local crafts. Best prices in town!',
+               latitude: 18.0167,
+               longitude: -76.7833,
+               urgency: 'low',
+               userEmail: 'market@jamaica.com',
+               createdAt: new Date(Date.now() - 19 * 60 * 60 * 1000),
+               updatedAt: new Date(Date.now() - 19 * 60 * 60 * 1000),
+               images: ['https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=400&h=300&fit=crop']
+             },
+             {
+               id: 'demo-11',
+               title: 'Power Outage - May Pen Area',
+               category: 'utility',
+               description: 'Scheduled maintenance causing power outage. Expected restoration by 6 PM.',
+               latitude: 18.0167,
+               longitude: -76.9500,
+               urgency: 'high',
+               userEmail: 'jps@jamaica.com',
+               createdAt: new Date(Date.now() - 21 * 60 * 60 * 1000),
+               updatedAt: new Date(Date.now() - 21 * 60 * 60 * 1000)
+             },
+             {
+               id: 'demo-12',
+               title: 'Dance Workshop - Trench Town',
+               category: 'entertainment',
+               description: 'Learn traditional Jamaican dance moves. All skill levels welcome!',
+               latitude: 17.9911,
+               longitude: -76.7833,
+               urgency: 'normal',
+               userEmail: 'dance@jamaica.com',
+               createdAt: new Date(Date.now() - 23 * 60 * 60 * 1000),
+               updatedAt: new Date(Date.now() - 23 * 60 * 60 * 1000),
+               images: ['https://images.unsplash.com/photo-1504609813442-a8924e83f76e?w=400&h=300&fit=crop']
+             },
+             {
+               id: 'demo-13',
+               title: 'Book Fair - University of the West Indies',
+               category: 'education',
+               description: 'Academic books, novels, and educational materials. Student discounts available.',
+               latitude: 18.0167,
+               longitude: -76.7833,
+               urgency: 'low',
+               userEmail: 'books@jamaica.com',
+               createdAt: new Date(Date.now() - 25 * 60 * 60 * 1000),
+               updatedAt: new Date(Date.now() - 25 * 60 * 60 * 1000)
+             },
+             {
+               id: 'demo-14',
+               title: 'Car Accident - Half Way Tree',
+               category: 'traffic',
+               description: 'Minor accident causing traffic delays. Police on scene.',
+               latitude: 18.0167,
+               longitude: -76.7833,
+               urgency: 'high',
+               userEmail: 'traffic@jamaica.com',
+               createdAt: new Date(Date.now() - 27 * 60 * 60 * 1000),
+               updatedAt: new Date(Date.now() - 27 * 60 * 60 * 1000)
+             },
+             {
+               id: 'demo-15',
+               title: 'Beach Party - Negril',
+               category: 'entertainment',
+               description: 'Sunset beach party with live DJ. Bring your own drinks!',
+               latitude: 18.2667,
+               longitude: -78.3500,
+               urgency: 'normal',
+               userEmail: 'party@jamaica.com',
+               createdAt: new Date(Date.now() - 29 * 60 * 60 * 1000),
+               updatedAt: new Date(Date.now() - 29 * 60 * 60 * 1000),
+               images: ['https://images.unsplash.com/photo-1544551763-46a013bb2dcc?w=400&h=300&fit=crop']
+             }
+           ];
+           return sampleMarkers;
   };
 
   const fetchMarkers = async () => {
     try {
       let q = collection(db, 'markers');
-      
-      // Add category filter if selected
-      if (categoryFilter) {
-        q = query(q, where('category', '==', categoryFilter));
-      }
       
       // Order by creation date
       q = query(q, orderBy('createdAt', 'desc'));
@@ -219,18 +603,20 @@ function App() {
         ...doc.data()
       }));
       
-      // Always add sample markers for demonstration
+      // Add sample markers for demonstration
       const sampleMarkers = generateSampleMarkers();
       const allMarkers = [...markersData, ...sampleMarkers];
-      
       setMarkers(allMarkers);
-      console.log('Markers fetched from Firebase:', allMarkers.length);
+      console.log('Markers fetched from Firebase:', markersData.length);
+      console.log('Demo markers generated:', sampleMarkers.length);
+      console.log('Total markers loaded:', allMarkers.length);
+      console.log('Demo markers include:', sampleMarkers.map(m => m.title).slice(0, 5));
     } catch (error) {
       console.error('Error fetching markers from Firebase:', error);
       // Fallback to sample markers if Firebase fails
       const sampleMarkers = generateSampleMarkers();
       setMarkers(sampleMarkers);
-      console.log('Using sample markers due to Firebase error');
+      console.log('Using sample markers due to Firebase error:', sampleMarkers.length);
     }
   };
 
@@ -389,27 +775,24 @@ function App() {
   };
 
   const handleMapClick = (lat, lng) => {
-    // Allow map clicks to add markers anywhere
+    // Allow users to click on the map to add markers
     if (!user) {
       toast.error('Please login to add markers');
       setShowAuthModal(true);
       return;
     }
 
-    // Check if location is within Jamaica (optional validation)
-    const isWithinJamaica = lat >= 17.7 && lat <= 18.5 && lng >= -78.4 && lng <= -76.1;
-    if (!isWithinJamaica) {
-      toast.warning('Location is outside Jamaica. You can still post, but it may not be relevant to local users.');
-    }
-
     // Determine parish based on location
     const parish = getParishFromLocation(lat, lng);
     if (parish) {
       setSelectedParish(parish);
+      toast.success(`Adding marker in ${parish} Parish`);
+    } else {
+      toast.info('Adding marker at clicked location');
     }
 
     setNewMarkerPosition({ lat, lng });
-    setShowLocketPost(true);
+    setShowAddMarkerModal(true);
   };
 
   const handleLocationMarker = (lat, lng) => {
@@ -424,13 +807,34 @@ function App() {
     const parish = getParishFromLocation(lat, lng);
     if (parish) {
       setSelectedParish(parish);
-      toast.success(`Using your location in ${parish} Parish`);
+      toast.success(`Adding marker at your location in ${parish} Parish`);
     } else {
-      toast.info('Using your current location');
+      toast.success('Adding marker at your current location');
     }
 
     setNewMarkerPosition({ lat, lng });
-    setShowLocketPost(true);
+    setShowAddMarkerModal(true);
+  };
+
+  const handleEventMarker = (lat, lng) => {
+    // This is called from the "Add Event Marker" button
+    if (!user) {
+      toast.error('Please login to add event markers');
+      setShowAuthModal(true);
+      return;
+    }
+
+    // Determine parish based on location
+    const parish = getParishFromLocation(lat, lng);
+    if (parish) {
+      setSelectedParish(parish);
+      toast.success(`Adding event marker at your location in ${parish} Parish`);
+    } else {
+      toast.success('Adding event marker at your current location');
+    }
+
+    setNewMarkerPosition({ lat, lng });
+    setShowAddMarkerModal(true);
   };
 
   // Simple parish detection based on coordinates
@@ -595,11 +999,13 @@ function App() {
         <main className="main-content">
           {viewMode === 'map' ? (
             <MapView
-              markers={markers}
+              markers={filteredMarkers}
               selectedMarker={selectedMarker}
+              highlightedMarker={highlightedMarker}
               onMarkerClick={setSelectedMarker}
               onMapClick={handleMapClick}
               onLocationMarker={handleLocationMarker}
+              onEventMarker={handleEventMarker}
               onDeleteMarker={handleDeleteMarker}
               currentUser={user}
               darkMode={darkMode}
@@ -615,15 +1021,19 @@ function App() {
             />
           ) : viewMode === 'feed' ? (
             <FeedView
-              markers={markers}
-              onMarkerClick={setSelectedMarker}
+              markers={filteredMarkers}
+              onMarkerClick={(marker) => {
+                setSelectedMarker(marker);
+                setHighlightedMarker(marker);
+                setViewMode('map');
+              }}
               onDeleteMarker={handleDeleteMarker}
               currentUser={user}
             />
           ) : viewMode === 'parish' ? (
             <ParishDomain
               parishName={selectedParish}
-              markers={markers}
+              markers={filteredMarkers}
               onMarkerClick={setSelectedMarker}
               onDeleteMarker={handleDeleteMarker}
               currentUser={user}

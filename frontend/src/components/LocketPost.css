@@ -1,5 +1,41 @@
 /* Locket-Style Posting Interface */
 
+/* Text color integration for light/dark mode */
+.locket-content {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+}
+
+.dark-mode .locket-content {
+  color: #ffffff !important;
+  background-color: #2a2a3e !important;
+}
+
+.dark-mode .locket-content::placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.dark-mode .locket-post {
+  background: #1a1a2e;
+  color: #ffffff;
+}
+
+/* Ensure all form elements have proper visibility */
+.locket-post input,
+.locket-post textarea,
+.locket-post select {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+}
+
+.dark-mode .locket-post input,
+.dark-mode .locket-post textarea,
+.dark-mode .locket-post select {
+  color: #ffffff !important;
+  background-color: #2a2a3e !important;
+  border-color: #4a4a5e !important;
+}
+
 .locket-overlay {
   position: fixed;
   top: 0;
@@ -158,6 +194,7 @@
   background: rgba(255, 255, 255, 0.8);
   transition: all 0.3s ease;
   font-family: inherit;
+  color: #000000;
 }
 
 .locket-textarea:focus {
@@ -165,6 +202,7 @@
   border-color: #2d5016;
   box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
   background: white;
+  color: #000000;
 }
 
 .character-count {

@@ -1,0 +1,78 @@
+/* Content Filter Styles */
+.content-filter-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  border: 2px solid rgba(0, 255, 255, 0.3);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  font-size: 0.9rem;
+  color: #333;
+  margin: 10px 0;
+}
+
+.dark-mode .content-filter-loading {
+  background: rgba(26, 26, 46, 0.9);
+  color: #ffffff;
+  border-color: rgba(0, 255, 255, 0.5);
+}
+
+.filter-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 255, 255, 0.3);
+  border-top: 2px solid #00ffff;
+  border-radius: 50%;
+  animation: filterSpin 1s linear infinite;
+}
+
+@keyframes filterSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Content warning styles */
+.content-warning {
+  background: rgba(255, 193, 7, 0.1);
+  border: 2px solid rgba(255, 193, 7, 0.3);
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin: 10px 0;
+  font-size: 0.9rem;
+  color: #856404;
+}
+
+.dark-mode .content-warning {
+  background: rgba(255, 193, 7, 0.2);
+  border-color: rgba(255, 193, 7, 0.5);
+  color: #ffc107;
+}
+
+/* Filtered content indicator */
+.filtered-content {
+  position: relative;
+}
+
+.filtered-content::after {
+  content: '🔒 Filtered';
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: rgba(0, 255, 255, 0.9);
+  color: #000;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.dark-mode .filtered-content::after {
+  background: rgba(0, 255, 255, 0.9);
+  color: #000;
+}

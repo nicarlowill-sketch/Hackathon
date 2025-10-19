@@ -11,6 +11,8 @@ const [urgency, setUrgency] = useState('normal');
 const [images, setImages] = useState([]);
 const [loading, setLoading] = useState(false);
 const [timeoutProgress, setTimeoutProgress] = useState(0);
+const [isAnonymous, setIsAnonymous] = useState(false);
+const [filteredContent, setFilteredContent] = useState('');
 const fileInputRef = useRef(null);
 
 const categories = [
@@ -104,7 +106,7 @@ const handleSubmit = async (e) => {
       urgency,
       images: images.map((img) => img.url),
       userId: currentUser?.id,
-      userEmail: currentUser?.email,
+      userEmail: (isAnonymous && category === 'crime') ? 'Anonymous' : currentUser?.email,
     };
 
     console.log('LocketPost: Submitting post...', postData);
@@ -117,6 +119,7 @@ const handleSubmit = async (e) => {
     setCategory('event');
     setUrgency('normal');
     setImages([]);
+    setIsAnonymous(false);
     onClose();
   } catch (error) {
     console.error('LocketPost submission failed:', error);
@@ -228,6 +231,23 @@ return (
           ))}
         </div>
       </div>
+
+      {/* Anonymous posting for crime markers */}
+      {category === 'crime' && (
+        <div className="locket-anonymous">
+          <div className="anonymous-checkbox">
+            <input
+              type="checkbox"
+              id="locket-anonymous"
+              checked={isAnonymous}
+              onChange={(e) => setIsAnonymous(e.target.checked)}
+            />
+            <label htmlFor="locket-anonymous">
+              Post anonymously (hide your email for crime reports)
+            </label>
+          </div>
+        </div>
+      )}
 
       <div className="locket-images">
         <button
