@@ -42,20 +42,20 @@ const JAMAICA_TOWNS = [
   { name: 'Lucea', coords: [18.4509, -78.1736], minZoom: 11 }
 ];
 
-// ✅ Combined locations
+// ✅ Combine parishes and towns into one array
 const JAMAICA_LOCATIONS = [
   ...JAMAICA_PARISHES.map(p => ({ ...p, type: 'parish', parish: p.name })),
   ...JAMAICA_TOWNS.map(t => ({ ...t, type: 'town', parish: t.name }))
 ];
 
-// Custom marker icon
+// Marker icon builder
 const getMarkerIcon = (category) => {
   const icons = { event: '🎉', obstacle: '⚠️', object: '📍', alert: '🚨' };
   const colors = { event: '#00A8E8', obstacle: '#FFB627', object: '#00C9A7', alert: '#FF6B6B' };
 
   return L.divIcon({
-    html: `<div class="custom-marker" style="background-color: ${colors[category] || '#00A8E8'}">
-             <span class="marker-icon">${icons[category] || '📍'}</span>
+    html: `<div class="custom-marker" style="background-color: ${colors[category]}"> 
+             <span class="marker-icon">${icons[category]}</span> 
            </div>`,
     className: 'custom-div-icon',
     iconSize: [40, 40],
@@ -103,7 +103,7 @@ const MapView = ({
 
     tileLayer.addTo(map);
 
-    // Add parish/town labels
+    // ✅ Add Jamaica location markers
     JAMAICA_LOCATIONS.forEach(location => {
       const locationIcon = L.divIcon({
         html: `<div class="location-marker ${location.type}" data-location="${location.name}">
@@ -130,34 +130,35 @@ const MapView = ({
     return () => map.remove();
   }, []);
 
-  // ✅ Safe markers update with debug
+  // ✅ Update markers safely
   useEffect(() => {
     if (!markersLayerRef.current) return;
 
-    markersLayerRef.current.clearLayers();
-
-    console.log("🧭 Incoming markers value:", markers);
-    console.log("✅ Type:", typeof markers);
-    console.log("✅ Is array:", Array.isArray(markers));
+    console.log("🧭 Incoming markers raw value:", markers);
+    console.log("🧭 Type:", typeof markers);
+    console.log("🧭 Array.isArray:", Array.isArray(markers));
 
     const safeMarkers = Array.isArray(markers)
       ? markers
-      : markers && typeof markers === 'object'
-      ? Object.values(markers)
+      : Array.isArray(markers?.data)
+      ? markers.data
       : [];
 
-    console.log("🧩 Processed markers array:", safeMarkers);
+    if (!Array.isArray(safeMarkers)) {
+      console.warn("⚠️ Expected markers array but got:", safeMarkers);
+      return;
+    }
+
+    markersLayerRef.current.clearLayers();
 
     safeMarkers.forEach((marker) => {
-      if (!marker || !marker.latitude || !marker.longitude) return;
-
       const icon = getMarkerIcon(marker.category);
       const leafletMarker = L.marker([marker.latitude, marker.longitude], { icon });
       const popupContent = `
         <div class="marker-popup">
-          <h3>${marker.title || 'Untitled'}</h3>
-          <p class="category-badge ${marker.category}">${(marker.category || 'object').toUpperCase()}</p>
-          <p>${marker.description || ''}</p>
+          <h3>${marker.title}</h3>
+          <p class="category-badge ${marker.category}">${marker.category.toUpperCase()}</p>
+          <p>${marker.description}</p>
           ${marker.image ? `<img src="${marker.image}" alt="${marker.title}" />` : ''}
           ${currentUser && currentUser.id === marker.user_id ? `
             <button onclick="window.deleteMarker('${marker.id}')">🗑️ Delete</button>` : ''}
@@ -182,6 +183,7 @@ const MapView = ({
       >
         📍 Use My Location
       </button>
+
       {selectedLocation && (
         <div className="location-info-panel">
           <button onClick={() => setSelectedLocation(null)}>×</button>
